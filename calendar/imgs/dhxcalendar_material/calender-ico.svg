@@ -1,0 +1,11 @@
+<svg id="Ebene_1" data-name="Ebene 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 36.2">
+  <title>calender-ico</title>
+  <path d="M47,13V43H3V13H47m1-1H2V44H48V12Z" transform="translate(-2 -7.8)" fill="#2b2b2b"/>
+  <rect x="11" width="1" height="4.83" fill="#2b2b2b"/>
+  <rect x="34" width="1" height="4.83" fill="#2b2b2b"/>
+  <rect y="5.2" width="46" height="6" fill="#2b2b2b"/>
+  <rect y="18.9" width="46" height="0.5" fill="#2b2b2b"/>
+  <rect x="1.6" y="27.7" width="32" height="0.5" transform="translate(43.6 2.6) rotate(90)" fill="#2b2b2b"/>
+  <rect x="16.9" y="27.7" width="32" height="0.5" transform="translate(58.9 -12.7) rotate(90)" fill="#2b2b2b"/>
+  <rect y="26.9" width="46" height="0.5" fill="#2b2b2b"/>
+</svg>
