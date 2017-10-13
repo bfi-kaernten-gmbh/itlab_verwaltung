@@ -10,20 +10,36 @@
 
 </head>
 <body>
-
+<div id="loader"><div id="spinner"></div></div>
 <div id="options">
+  <label for="from">Von: </label>
   <input type="text" readonly id="from" class="fromto" />
+  <label for="to">Bis: </label>
   <input type="text" readonly id="to" class="fromto" />
 
-  <select id="trainer_options" multiple class="chosen-select">
+  <select id="trainer_options" multiple class="chosen-select" data-placeholder="wähle Trainer">
 
   </select>
+</div>
+
+
+<div id="trainer_pagination">
+  <div class="pag">Trainer</div>
+  <div class="pag">h / min</div>
+  <div class="pag">gezählte Tage</div>
+</div>
+
+<div id="trainer-c">
+  <div class="trainer ml"> <h3>ml</h3><p class="hours">25</p><p>6</p></div>
+  <div class="trainer ml"> <h3>ml</h3><p>25</p><p>6</p></div>
+  <div class="trainer ml"> <h3>ml</h3><p>25</p><p>6</p></div>
 </div>
 
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="calendar/dhtmlxcalendar.js"></script>
 <script src="js/chosen.jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
 <script src="js/bundle.js"></script>
 </body>
 </html>

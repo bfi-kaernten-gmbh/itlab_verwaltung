@@ -7669,7 +7669,7 @@ exports.UNZIP = 7;
 function Zlib(mode) {
   if (mode < exports.DEFLATE || mode > exports.UNZIP)
     throw new TypeError("Bad argument");
-    
+
   this.mode = mode;
   this.init_done = false;
   this.write_in_progress = false;
@@ -7687,18 +7687,18 @@ Zlib.prototype.init = function(windowBits, level, memLevel, strategy, dictionary
   this.memLevel = memLevel;
   this.strategy = strategy;
   // dictionary not supported.
-  
+
   if (this.mode === exports.GZIP || this.mode === exports.GUNZIP)
     this.windowBits += 16;
-    
+
   if (this.mode === exports.UNZIP)
     this.windowBits += 32;
-    
+
   if (this.mode === exports.DEFLATERAW || this.mode === exports.INFLATERAW)
     this.windowBits = -this.windowBits;
-    
+
   this.strm = new zstream();
-  
+
   switch (this.mode) {
     case exports.DEFLATE:
     case exports.GZIP:
@@ -7724,12 +7724,12 @@ Zlib.prototype.init = function(windowBits, level, memLevel, strategy, dictionary
     default:
       throw new Error("Unknown mode " + this.mode);
   }
-  
+
   if (status !== exports.Z_OK) {
     this._error(status);
     return;
   }
-  
+
   this.write_in_progress = false;
   this.init_done = true;
 };
@@ -7741,31 +7741,31 @@ Zlib.prototype.params = function() {
 Zlib.prototype._writeCheck = function() {
   if (!this.init_done)
     throw new Error("write before init");
-    
+
   if (this.mode === exports.NONE)
     throw new Error("already finalized");
-    
+
   if (this.write_in_progress)
     throw new Error("write already in progress");
-    
+
   if (this.pending_close)
     throw new Error("close is pending");
 };
 
-Zlib.prototype.write = function(flush, input, in_off, in_len, out, out_off, out_len) {    
+Zlib.prototype.write = function(flush, input, in_off, in_len, out, out_off, out_len) {
   this._writeCheck();
   this.write_in_progress = true;
-  
+
   var self = this;
   process.nextTick(function() {
     self.write_in_progress = false;
     var res = self._write(flush, input, in_off, in_len, out, out_off, out_len);
     self.callback(res[0], res[1]);
-    
+
     if (self.pending_close)
       self.close();
   });
-  
+
   return this;
 };
 
@@ -7783,7 +7783,7 @@ Zlib.prototype.writeSync = function(flush, input, in_off, in_len, out, out_off, 
 
 Zlib.prototype._write = function(flush, input, in_off, in_len, out, out_off, out_len) {
   this.write_in_progress = true;
-  
+
   if (flush !== exports.Z_NO_FLUSH &&
       flush !== exports.Z_PARTIAL_FLUSH &&
       flush !== exports.Z_SYNC_FLUSH &&
@@ -7792,18 +7792,18 @@ Zlib.prototype._write = function(flush, input, in_off, in_len, out, out_off, out
       flush !== exports.Z_BLOCK) {
     throw new Error("Invalid flush value");
   }
-  
+
   if (input == null) {
     input = new Buffer(0);
     in_len = 0;
     in_off = 0;
   }
-  
+
   if (out._set)
     out.set = out._set;
   else
     out.set = bufferSet;
-  
+
   var strm = this.strm;
   strm.avail_in = in_len;
   strm.input = input;
@@ -7811,7 +7811,7 @@ Zlib.prototype._write = function(flush, input, in_off, in_len, out, out_off, out
   strm.avail_out = out_len;
   strm.output = out;
   strm.next_out = out_off;
-  
+
   switch (this.mode) {
     case exports.DEFLATE:
     case exports.GZIP:
@@ -7827,11 +7827,11 @@ Zlib.prototype._write = function(flush, input, in_off, in_len, out, out_off, out
     default:
       throw new Error("Unknown mode " + this.mode);
   }
-  
+
   if (status !== exports.Z_STREAM_END && status !== exports.Z_OK) {
     this._error(status);
   }
-  
+
   this.write_in_progress = false;
   return [strm.avail_in, strm.avail_out];
 };
@@ -7841,15 +7841,15 @@ Zlib.prototype.close = function() {
     this.pending_close = true;
     return;
   }
-  
+
   this.pending_close = false;
-  
+
   if (this.mode === exports.DEFLATE || this.mode === exports.GZIP || this.mode === exports.DEFLATERAW) {
     zlib_deflate.deflateEnd(this.strm);
   } else {
     zlib_inflate.inflateEnd(this.strm);
   }
-  
+
   this.mode = exports.NONE;
 };
 
@@ -7864,7 +7864,7 @@ Zlib.prototype.reset = function() {
       var status = zlib_inflate.inflateReset(this.strm);
       break;
   }
-  
+
   if (status !== exports.Z_OK) {
     this._error(status);
   }
@@ -7872,7 +7872,7 @@ Zlib.prototype.reset = function() {
 
 Zlib.prototype._error = function(status) {
   this.onerror(msg[status] + ': ' + this.strm.msg, status);
-  
+
   this.write_in_progress = false;
   if (this.pending_close)
     this.close();
@@ -25137,7 +25137,7 @@ module.exports = function privateDecrypt(private_key, enc, reverse) {
   } else {
     padding = 4;
   }
-  
+
   var key = parseKeys(private_key);
   var k = key.modulus.byteLength();
   if (enc.length > k || new bn(enc).cmp(key.modulus) >= 0) {
@@ -30142,7 +30142,7 @@ var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode) {
 		self.url = response.url
 		self.statusCode = response.status
 		self.statusMessage = response.statusText
-		
+
 		response.headers.forEach(function(header, key){
 			self.headers[key.toLowerCase()] = header
 			self.rawHeaders.push(key, header)
@@ -30230,7 +30230,7 @@ IncomingMessage.prototype._onXHRProgress = function () {
 				self.push(new Buffer(response))
 				break
 			}
-			// Falls through in IE8	
+			// Falls through in IE8
 		case 'text':
 			try { // This will fail when readyState = 3 in IE9. Switch mode and wait for readyState = 4
 				response = xhr.responseText
@@ -32146,13 +32146,13 @@ Script.prototype.runInContext = function (context) {
     if (!(context instanceof Context)) {
         throw new TypeError("needs a 'context' argument.");
     }
-    
+
     var iframe = document.createElement('iframe');
     if (!iframe.style) iframe.style = {};
     iframe.style.display = 'none';
-    
+
     document.body.appendChild(iframe);
-    
+
     var win = iframe.contentWindow;
     var wEval = win.eval, wExecScript = win.execScript;
 
@@ -32161,7 +32161,7 @@ Script.prototype.runInContext = function (context) {
         wExecScript.call(win, 'null');
         wEval = win.eval;
     }
-    
+
     forEach(Object_keys(context), function (key) {
         win[key] = context[key];
     });
@@ -32170,11 +32170,11 @@ Script.prototype.runInContext = function (context) {
             win[key] = context[key];
         }
     });
-    
+
     var winKeys = Object_keys(win);
 
     var res = wEval.call(win, this.code);
-    
+
     forEach(Object_keys(win), function (key) {
         // Avoid copying circular objects like `top` and `window` by only
         // updating existing context properties or new properties in the `win`
@@ -32189,9 +32189,9 @@ Script.prototype.runInContext = function (context) {
             defineProp(context, key, win[key]);
         }
     });
-    
+
     document.body.removeChild(iframe);
-    
+
     return res;
 };
 
@@ -32253,56 +32253,63 @@ function extend() {
 }
 
 },{}],188:[function(require,module,exports){
+// get needed modules
 var gsheet = require('gsheet-web');
 var moment = require('moment');
-var GetSheetDone = require('get-sheet-done');
 
-GetSheetDone.labeledCols('1Qaoq2mNojwEipDDiMnqclSaAgtqmX4XLy7q6659br8U').then(sheet => {
-    console.log(sheet)
-})
-
-// init calendar
+// init calendar plugin "from"
 var calenderFrom = new dhtmlXCalendarObject("from");
 calenderFrom.setSkin("material");
 calenderFrom.setDateFormat("%d.%m.%Y");
 
+// init calendar plugin "to"
 var calenderTo = new dhtmlXCalendarObject("to");
 calenderTo.setSkin("material");
 calenderTo.setDateFormat("%d.%m.%Y");
 
 
+// set from and to variables for later use
+// holds index number that matches the selected date in the dataArray
 var curFrom;
 var curTo;
-// add EventListeners to change
+
+// listen to change event on calender "From" & "To"
+// calls function if both curFrom and curTo varaibles have
+// a value & "to" has a bigger value than "from"
+// counts for both onChange events
 calenderFrom.attachEvent("onChange", function(date, state){
-    console.log(moment(date).format('DDD.MM.YYYY'));
-    curFrom = findInArray(dataArray, 'datum', moment(date).format('DD.MM.YYYY'));
-    console.log(curFrom);
-    if(curFrom >= 0 && curTo >= 0) {
+    //console.log(moment(date).format('DD.MM.YYYY'));
+    curFrom = findInArray(dataArray, 'datum', moment(date).format('YYYY-MM-DD'));
+    //console.log(curFrom);
+    if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
       updateTrainerTable();
     }
 });
-
 calenderTo.attachEvent("onChange", function(date, state){
-    console.log(moment(date).format('DD.MM.YYYY'));
-    curTo = findInArray(dataArray, 'datum', moment(date).format('DD.MM.YYYY'));
-    console.log(curTo);
+    //console.log(moment(date).format('YYYY-MM-DD'));
+    curTo = findInArray(dataArray, 'datum', moment(date).format('YYYY-MM-DD'));
+    //console.log(curTo);
 
-    if(curFrom >= 0 && curTo >= 0 ) {
+    if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
       updateTrainerTable();
     }
 });
 
-
+// holds trainer names that are selected
 var trainer = [];
+// holds whole data from google spreadsheet
 var dataArray;
 
+// get google spreadsheet data
 gsheet('1Qaoq2mNojwEipDDiMnqclSaAgtqmX4XLy7q6659br8U', (data) => {
   console.log(data);
   dataArray = data;
   createOptions(data)
+  stopLoading();
 });
 
+// create all options that need to be initialized through the
+// spreadsheet data
 function createOptions(data) {
   var options = document.getElementById('options');
 
@@ -32311,19 +32318,29 @@ function createOptions(data) {
   for(var i in list) {
     trainerOptions.innerHTML += '<option value='+list[i]+'>' + list[i] + '</option>'
   }
-
   chosenInit();
 }
+function stopLoading() {
+  var laoder = document.getElementById('loader');
+  loader.classList += ' hide';
+}
 
-
+// chosen plugin initialization
 const chosenInit = () => {
   $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"});
+  // listen to changes on the trainer dropdown and push name into trainer variable
   $('.chosen-select').on('change', function(evt, selected) {
     if(selected.selected) {
       trainer.push(selected.selected);
     } else if(selected.deselected) {
       var index = trainer.indexOf(selected.deselected);
       trainer.splice(index, 1);
+    }
+    if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
+      updateTrainerTable();
+    }
+    if(trainer.length === 0) {
+      removeTrainerContent();
     }
   });
 }
@@ -32332,8 +32349,8 @@ const getTrainerNames = (data) => {
   var propArray = Object.getOwnPropertyNames(data[0]);
   var trainerList  = [];
   propArray.forEach(function (item) {
-    if(item !== "datum" && item.search('gruppe') === -1) {
-      trainerList.push(item);
+    if(item.search('start') !== -1) {
+      trainerList.push(item.replace('start', ''));
     }
   })
   return trainerList;
@@ -32341,24 +32358,110 @@ const getTrainerNames = (data) => {
 
 
 const updateTrainerTable = () => {
-  console.log('updateTrainerTable');
-  for (var i = curFrom; i <= curTo; i++) {
-    console.log(dataArray[i].datum);
+
+  if(trainer.length > 0) {
+    console.log('updateTrainerTable');
+    removeTrainerContent()
+    for (var i = 0; i < trainer.length; i++) {
+      var hoursArray = [];
+      for (var c = curFrom; c <= curTo; c++) {
+
+        var start = dataArray[c][trainer[i]+'start'];
+        var end = dataArray[c][trainer[i]+'end'];
+
+        if(start && end) {
+          hoursArray.push(getHours(start,end));
+        }
+      }
+      //console.log(hoursArray);
+      var hoursTotal = getTotalHours(hoursArray);
+      var daysCounted = (curTo - curFrom) + 1;
+      renderTrainerHours(trainer[i], hoursTotal, daysCounted);
+      new Clipboard('.trainer');
+    }
+  }
+}
+
+function getHours(start, end) {
+  var start = start.split(':'),
+      end = end.split(':'),
+      sh = parseInt(start[0]),
+      sm = parseInt(start[1]),
+      eh = parseInt(end[0]),
+      em = parseInt(end[1]);
+
+  //console.log((((eh * 60) + em)-((sh*60) + sm)) % 60); getMinutes
+  //console.log((((eh * 60) + em)-((sh*60) + sm)) / 60); getHours
+  var result = (((eh * 60) + em)-((sh*60) + sm)) / 60;
+
+  if(result >= 6) {
+    return result - 0.5;
+  } else {
+    return result;
+  }
+}
+
+function getTotalHours(array) {
+  var totalHours = 0;
+  for (var i = 0; i < array.length; i++) {
+    totalHours += array[i];
+  }
+  return totalHours;
+}
+
+function removeTrainerContent() {
+  var tContainer = document.getElementById('trainer-c');
+  while (tContainer.lastChild) {
+    tContainer.removeChild(tContainer.lastChild);
+  }
+}
+
+function renderTrainerHours(name, hours, daysCounted) {
+  var tContainer = document.getElementById('trainer-c');
+  if (isInt(hours)) {
+    tContainer.innerHTML += '<div class="trainer" data-clipboard-target="#'+ name +'"> <h3>' + name +'</h3><p class="hours" id="'+ name +'">'+ hours + '</p><p>'+ daysCounted +'</p></div>';
+  } else {
+    var parsedHours = parseInt(hours),
+        parsedMinutes = (hours - parseInt(hours)) * 60;
+    tContainer.innerHTML += '<div class="trainer" data-clipboard-target="#'+ name +'"> <h3>' + name +'</h3><p class="hours" id="'+ name +'">'+ parsedHours + ' / ' + parsedMinutes + '</p><p>'+ daysCounted +'</p></div>';
   }
 
 }
 
 const findInArray = (array, attr, value) => {
+  var value = isWeekendDay(value);
+
   for (var i = 0; i < array.length; i++) {
-    console.log('momentÄ' + moment(array[i][attr]).format('DD.MM.YYYY'));
+    //console.log('moment ' + moment(array[i][attr]).format('YYYY-MM-DD'), 'orig date '+ array[i][attr]);
     if(array[i][attr] === value) {
       return i;
     }
   }
   return -1;
 }
+// Saturday = 6
+// Sunday = 0
+function isWeekendDay(date) {
+  if(moment(date).day() === 6) {
+    var newDate = moment(date).subtract(1,'d');
+    return newDate.format('YYYY-MM-DD');
+  } else if(moment(date).day() === 0) {
+    var newDate = moment(date).subtract(2,'d');
+    return newDate.format('YYYY-MM-DD');
+  } else {
+    return date;
+  }
+}
 
-},{"get-sheet-done":254,"gsheet-web":255,"moment":297}],189:[function(require,module,exports){
+// check if number is an integer
+function isInt(n) {
+   return n % 1 === 0;
+}
+
+var test = '0.5';
+console.log(test * 60);
+
+},{"gsheet-web":253,"moment":295}],189:[function(require,module,exports){
 'use strict';
 
 var KEYWORDS = [
@@ -32888,7 +32991,7 @@ function getMetaSchemaOptions(self) {
   return metaOpts;
 }
 
-},{"./$data":189,"./cache":191,"./compile":196,"./compile/async":193,"./compile/error_classes":194,"./compile/formats":195,"./compile/resolve":197,"./compile/rules":198,"./compile/schema_obj":199,"./compile/util":201,"./keyword":225,"./patternGroups":226,"./refs/$data.json":227,"./refs/json-schema-draft-06.json":228,"co":241,"json-stable-stringify":288}],191:[function(require,module,exports){
+},{"./$data":189,"./cache":191,"./compile":196,"./compile/async":193,"./compile/error_classes":194,"./compile/formats":195,"./compile/resolve":197,"./compile/rules":198,"./compile/schema_obj":199,"./compile/util":201,"./keyword":225,"./patternGroups":226,"./refs/$data.json":227,"./refs/json-schema-draft-06.json":228,"co":241,"json-stable-stringify":286}],191:[function(require,module,exports){
 'use strict';
 
 
@@ -33595,7 +33698,7 @@ function vars(arr, statement) {
   return code;
 }
 
-},{"../dotjs/validate":224,"./error_classes":194,"./resolve":197,"./util":201,"co":241,"fast-deep-equal":250,"json-stable-stringify":288}],197:[function(require,module,exports){
+},{"../dotjs/validate":224,"./error_classes":194,"./resolve":197,"./util":201,"co":241,"fast-deep-equal":250,"json-stable-stringify":286}],197:[function(require,module,exports){
 'use strict';
 
 var url = require('url')
@@ -33868,7 +33971,7 @@ function resolveIds(schema) {
   return localRefs;
 }
 
-},{"./schema_obj":199,"./util":201,"fast-deep-equal":250,"json-schema-traverse":286,"url":180}],198:[function(require,module,exports){
+},{"./schema_obj":199,"./util":201,"fast-deep-equal":250,"json-schema-traverse":284,"url":180}],198:[function(require,module,exports){
 'use strict';
 
 var ruleModules = require('./_rules')
@@ -37610,7 +37713,7 @@ module.exports={
         "$data": {
             "type": "string",
             "anyOf": [
-                { "format": "relative-json-pointer" }, 
+                { "format": "relative-json-pointer" },
                 { "format": "json-pointer" }
             ]
         }
@@ -38704,7 +38807,7 @@ var crypto = require('crypto')
  * Valid keys.
  */
 
-var keys = 
+var keys =
   [ 'acl'
   , 'location'
   , 'logging'
@@ -38743,7 +38846,7 @@ module.exports.authorization = authorization
  * @param {Object} options
  * @return {String}
  * @api private
- */ 
+ */
 
 function hmacSha1 (options) {
   return crypto.createHmac('sha1', options.secret).update(options.message).digest('base64')
@@ -38752,8 +38855,8 @@ function hmacSha1 (options) {
 module.exports.hmacSha1 = hmacSha1
 
 /**
- * Create a base64 sha1 HMAC for `options`. 
- * 
+ * Create a base64 sha1 HMAC for `options`.
+ *
  * @param {Object} options
  * @return {String}
  * @api private
@@ -38766,10 +38869,10 @@ function sign (options) {
 module.exports.sign = sign
 
 /**
- * Create a base64 sha1 HMAC for `options`. 
+ * Create a base64 sha1 HMAC for `options`.
  *
  * Specifically to be used with S3 presigned URLs
- * 
+ *
  * @param {Object} options
  * @return {String}
  * @api private
@@ -38785,7 +38888,7 @@ module.exports.signQuery= signQuery
  * Return a string for sign() with the given `options`.
  *
  * Spec:
- * 
+ *
  *    <verb>\n
  *    <md5>\n
  *    <content-type>\n
@@ -38801,7 +38904,7 @@ module.exports.signQuery= signQuery
 function stringToSign (options) {
   var headers = options.amazonHeaders || ''
   if (headers) headers += '\n'
-  var r = 
+  var r =
     [ options.verb
     , options.md5
     , options.contentType
@@ -38817,7 +38920,7 @@ module.exports.stringToSign = stringToSign
  * for S3 presigned URLs
  *
  * Spec:
- * 
+ *
  *    <date>\n
  *    <resource>
  *
@@ -39880,7 +39983,7 @@ module.exports = {
       pbkdf: bcrypt_pbkdf
 };
 
-},{"tweetnacl":351}],240:[function(require,module,exports){
+},{"tweetnacl":349}],240:[function(require,module,exports){
 function Caseless (dict) {
   this.dict = dict || {}
 }
@@ -40629,11 +40732,11 @@ exports.ECKey = function(curve, key, isPublic)
 //      var y = key.slice(bytes+1);
 //      this.P = new ECPointFp(curve,
 //        curve.fromBigInteger(new BigInteger(x.toString("hex"), 16)),
-//        curve.fromBigInteger(new BigInteger(y.toString("hex"), 16)));      
+//        curve.fromBigInteger(new BigInteger(y.toString("hex"), 16)));
       this.P = curve.decodePointHex(key.toString("hex"));
     }else{
       if(key.length != bytes) return false;
-      priv = new BigInteger(key.toString("hex"), 16);      
+      priv = new BigInteger(key.toString("hex"), 16);
     }
   }else{
     var n1 = n.subtract(BigInteger.ONE);
@@ -40655,13 +40758,13 @@ exports.ECKey = function(curve, key, isPublic)
       if(!key || !key.P) return false;
       var S = key.P.multiply(priv);
       return new Buffer(unstupid(S.getX().toBigInteger().toString(16),bytes*2),"hex");
-   }     
+   }
   }
 }
 
 
 }).call(this,require("buffer").Buffer)
-},{"./lib/ec.js":246,"./lib/sec.js":247,"buffer":50,"crypto":60,"jsbn":285}],246:[function(require,module,exports){
+},{"./lib/ec.js":246,"./lib/sec.js":247,"buffer":50,"crypto":60,"jsbn":283}],246:[function(require,module,exports){
 // Basic Javascript Elliptic Curve implementation
 // Ported loosely from BouncyCastle's Java EC code
 // Only Fp curves implemented for now
@@ -41098,7 +41201,7 @@ ECFieldElementFp.prototype.modReduce = function(x)
             {
                 u = u.multiply(this.getR());
             }
-            x = u.add(v); 
+            x = u.add(v);
         }
         while (x.compareTo(q) >= 0)
         {
@@ -41224,7 +41327,7 @@ var exports = {
 
 module.exports = exports
 
-},{"jsbn":285}],247:[function(require,module,exports){
+},{"jsbn":283}],247:[function(require,module,exports){
 // Named EC curves
 
 // Requires ec.js, jsbn.js, and jsbn2.js
@@ -41396,7 +41499,7 @@ module.exports = {
   "secp256r1":secp256r1
 }
 
-},{"./ec.js":246,"jsbn":285}],248:[function(require,module,exports){
+},{"./ec.js":246,"jsbn":283}],248:[function(require,module,exports){
 'use strict';
 
 var hasOwn = Object.prototype.hasOwnProperty;
@@ -41717,127 +41820,6 @@ module.exports = function equal(a, b) {
 };
 
 },{}],251:[function(require,module,exports){
-(function (global, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define(['exports', 'module'], factory);
-  } else if (typeof exports !== 'undefined' && typeof module !== 'undefined') {
-    factory(exports, module);
-  } else {
-    var mod = {
-      exports: {}
-    };
-    factory(mod.exports, mod);
-    global.fetchJsonp = mod.exports;
-  }
-})(this, function (exports, module) {
-  'use strict';
-
-  var defaultOptions = {
-    timeout: 5000,
-    jsonpCallback: 'callback',
-    jsonpCallbackFunction: null
-  };
-
-  function generateCallbackFunction() {
-    return 'jsonp_' + Date.now() + '_' + Math.ceil(Math.random() * 100000);
-  }
-
-  function clearFunction(functionName) {
-    // IE8 throws an exception when you try to delete a property on window
-    // http://stackoverflow.com/a/1824228/751089
-    try {
-      delete window[functionName];
-    } catch (e) {
-      window[functionName] = undefined;
-    }
-  }
-
-  function removeScript(scriptId) {
-    var script = document.getElementById(scriptId);
-    if (script) {
-      document.getElementsByTagName('head')[0].removeChild(script);
-    }
-  }
-
-  function fetchJsonp(_url) {
-    var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-    // to avoid param reassign
-    var url = _url;
-    var timeout = options.timeout || defaultOptions.timeout;
-    var jsonpCallback = options.jsonpCallback || defaultOptions.jsonpCallback;
-
-    var timeoutId = undefined;
-
-    return new Promise(function (resolve, reject) {
-      var callbackFunction = options.jsonpCallbackFunction || generateCallbackFunction();
-      var scriptId = jsonpCallback + '_' + callbackFunction;
-
-      window[callbackFunction] = function (response) {
-        resolve({
-          ok: true,
-          // keep consistent with fetch API
-          json: function json() {
-            return Promise.resolve(response);
-          }
-        });
-
-        if (timeoutId) clearTimeout(timeoutId);
-
-        removeScript(scriptId);
-
-        clearFunction(callbackFunction);
-      };
-
-      // Check if the user set their own params, and if not add a ? to start a list of params
-      url += url.indexOf('?') === -1 ? '?' : '&';
-
-      var jsonpScript = document.createElement('script');
-      jsonpScript.setAttribute('src', '' + url + jsonpCallback + '=' + callbackFunction);
-      if (options.charset) {
-        jsonpScript.setAttribute('charset', options.charset);
-      }
-      jsonpScript.id = scriptId;
-      document.getElementsByTagName('head')[0].appendChild(jsonpScript);
-
-      timeoutId = setTimeout(function () {
-        reject(new Error('JSONP request to ' + _url + ' timed out'));
-
-        clearFunction(callbackFunction);
-        removeScript(scriptId);
-      }, timeout);
-
-      // Caught if got 404/500
-      jsonpScript.onerror = function () {
-        reject(new Error('JSONP request to ' + _url + ' failed'));
-
-        clearFunction(callbackFunction);
-        removeScript(scriptId);
-        if (timeoutId) clearTimeout(timeoutId);
-      };
-    });
-  }
-
-  // export as global function
-  /*
-  let local;
-  if (typeof global !== 'undefined') {
-    local = global;
-  } else if (typeof self !== 'undefined') {
-    local = self;
-  } else {
-    try {
-      local = Function('return this')();
-    } catch (e) {
-      throw new Error('polyfill failed because global object is unavailable in this environment');
-    }
-  }
-  local.fetchJsonp = fetchJsonp;
-  */
-
-  module.exports = fetchJsonp;
-});
-},{}],252:[function(require,module,exports){
 module.exports = ForeverAgent
 ForeverAgent.SSL = ForeverAgentSSL
 
@@ -41846,8 +41828,8 @@ var util = require('util')
   , net = require('net')
   , tls = require('tls')
   , AgentSSL = require('https').Agent
-  
-function getConnectionName(host, port) {  
+
+function getConnectionName(host, port) {
   var name = ''
   if (typeof host === 'string') {
     name = host + ':' + port
@@ -41856,7 +41838,7 @@ function getConnectionName(host, port) {
     name = host.host + ':' + host.port + ':' + (host.localAddress ? (host.localAddress + ':') : ':')
   }
   return name
-}    
+}
 
 function ForeverAgent(options) {
   var self = this
@@ -41874,7 +41856,7 @@ function ForeverAgent(options) {
     } else if (self.sockets[name].length < self.minSockets) {
       if (!self.freeSockets[name]) self.freeSockets[name] = []
       self.freeSockets[name].push(socket)
-      
+
       // if an error happens while we don't use the socket anyway, meh, throw the socket away
       var onIdleError = function() {
         socket.destroy()
@@ -41900,7 +41882,7 @@ ForeverAgent.prototype.createConnection = net.createConnection
 ForeverAgent.prototype.addRequestNoreuse = Agent.prototype.addRequest
 ForeverAgent.prototype.addRequest = function(req, host, port) {
   var name = getConnectionName(host, port)
-  
+
   if (typeof host !== 'string') {
     var options = host
     port = options.port
@@ -41929,7 +41911,7 @@ ForeverAgent.prototype.removeSocket = function(s, name, host, port) {
     delete this.sockets[name]
     delete this.requests[name]
   }
-  
+
   if (this.freeSockets[name]) {
     var index = this.freeSockets[name].indexOf(s)
     if (index !== -1) {
@@ -41977,239 +41959,11 @@ function createConnectionSSL (port, host, options) {
   return tls.connect(options);
 }
 
-},{"http":173,"https":103,"net":48,"tls":48,"util":185}],253:[function(require,module,exports){
+},{"http":173,"https":103,"net":48,"tls":48,"util":185}],252:[function(require,module,exports){
 /* eslint-env browser */
 module.exports = typeof self == 'object' ? self.FormData : window.FormData;
 
-},{}],254:[function(require,module,exports){
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory(require("fetch-jsonp"));
-	else if(typeof define === 'function' && define.amd)
-		define("GetSheetDone", ["fetch-jsonp"], factory);
-	else if(typeof exports === 'object')
-		exports["GetSheetDone"] = factory(require("fetch-jsonp"));
-	else
-		root["GetSheetDone"] = factory(root["fetchJsonp"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_1__) {
-return /******/ (function(modules) { // webpackBootstrap
-/******/ 	// The module cache
-/******/ 	var installedModules = {};
-/******/
-/******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
-/******/
-/******/ 		// Check if module is in cache
-/******/ 		if(installedModules[moduleId]) {
-/******/ 			return installedModules[moduleId].exports;
-/******/ 		}
-/******/ 		// Create a new module (and put it into the cache)
-/******/ 		var module = installedModules[moduleId] = {
-/******/ 			i: moduleId,
-/******/ 			l: false,
-/******/ 			exports: {}
-/******/ 		};
-/******/
-/******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
-/******/ 		// Flag the module as loaded
-/******/ 		module.l = true;
-/******/
-/******/ 		// Return the exports of the module
-/******/ 		return module.exports;
-/******/ 	}
-/******/
-/******/
-/******/ 	// expose the modules object (__webpack_modules__)
-/******/ 	__webpack_require__.m = modules;
-/******/
-/******/ 	// expose the module cache
-/******/ 	__webpack_require__.c = installedModules;
-/******/
-/******/ 	// define getter function for harmony exports
-/******/ 	__webpack_require__.d = function(exports, name, getter) {
-/******/ 		if(!__webpack_require__.o(exports, name)) {
-/******/ 			Object.defineProperty(exports, name, {
-/******/ 				configurable: false,
-/******/ 				enumerable: true,
-/******/ 				get: getter
-/******/ 			});
-/******/ 		}
-/******/ 	};
-/******/
-/******/ 	// getDefaultExport function for compatibility with non-harmony modules
-/******/ 	__webpack_require__.n = function(module) {
-/******/ 		var getter = module && module.__esModule ?
-/******/ 			function getDefault() { return module['default']; } :
-/******/ 			function getModuleExports() { return module; };
-/******/ 		__webpack_require__.d(getter, 'a', getter);
-/******/ 		return getter;
-/******/ 	};
-/******/
-/******/ 	// Object.prototype.hasOwnProperty.call
-/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
-/******/
-/******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
-/******/
-/******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
-/******/ })
-/************************************************************************/
-/******/ ([
-/* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.buildUrl = buildUrl;
-exports.parseRawCells = parseRawCells;
-exports.parseLabeledCols = parseLabeledCols;
-exports.parseLabeledRowsCols = parseLabeledRowsCols;
-exports.raw = raw;
-exports.labeledCols = labeledCols;
-exports.labeledColsRows = labeledColsRows;
-
-var _fetchJsonp = __webpack_require__(1);
-
-var _fetchJsonp2 = _interopRequireDefault(_fetchJsonp);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function buildUrl(id, sheetNum, mode) {
-  return 'https://spreadsheets.google.com/feeds/' + mode + '/' + id + '/' + sheetNum + '/public/values?alt=json-in-script';
-}
-
-// Generic fetch and parse function
-function fetchAndParse(id, sheetNum, type, parseEntries) {
-  if (id.length === 0) {
-    return Promise.reject(new Error('empty id'));
-  }
-  var url = buildUrl(id, sheetNum, type);
-  return new Promise(function (resolve, reject) {
-    (0, _fetchJsonp2.default)(url).then(function (response) {
-      return response.json();
-    }).then(function (json) {
-      var data = parseEntries(json.feed.entry);
-      var res = {
-        title: json.feed.title.$t,
-        updated: json.feed.updated.$t,
-        data: data
-      };
-      resolve(res);
-    }).catch(function (ex) {
-      reject(ex);
-    });
-  });
-}
-
-function parseRawCells(entries) {
-  var data = [];
-  entries.forEach(function (cell) {
-    var row = parseInt(cell.gs$cell.row, 10) - 1;
-    var col = parseInt(cell.gs$cell.col, 10) - 1;
-    var content = cell.gs$cell.$t;
-    if (data[row] === undefined) {
-      data[row] = [];
-    }
-    data[row][col] = content;
-  });
-  return data;
-}
-
-/**
- * Use for table with labels only for columns
- */
-function parseEntry(entry) {
-  var res = {};
-  Object.keys(entry).forEach(function (key) {
-    if (key.indexOf('gsx$') === 0) {
-      var label = key.substr(4);
-      res[label] = entry[key].$t;
-    }
-  });
-  return res;
-}
-
-/**
- * Parser for table where just the columns are labeled
- * @return array of objects where the labels are keys
- */
-function parseLabeledCols(entries) {
-  return entries.map(function (entry) {
-    return parseEntry(entry);
-  });
-}
-
-/**
- * Use for table with labels for rows AND columns
- * Example input: "bar: 123, baz: 122, bab: 234"
- */
-function parseLabeledRow(row) {
-  var cols = row.split(', ');
-  var res = cols.reduce(function (acc, col) {
-    var pair = col.split(': ');
-    acc[pair[0]] = pair[1];
-    return acc;
-  }, {});
-  return res;
-}
-
-/**
- * Parser for table where both rows and columns are labeled
- * @return object where keys are row labels and values are objects where keys are the column labels
- */
-function parseLabeledRowsCols(entries) {
-  var res = {};
-  entries.forEach(function (entry) {
-    res[entry.title.$t] = parseLabeledRow(entry.content.$t);
-  });
-  return res;
-}
-
-// fetch as raw arrays
-function raw(id) {
-  var sheetNum = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-
-  return fetchAndParse(id, sheetNum, 'cells', parseRawCells);
-}
-
-// fetch as array of labeled columns
-function labeledCols(id) {
-  var sheetNum = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-
-  return fetchAndParse(id, sheetNum, 'list', parseLabeledCols);
-}
-
-// fetch as labeled map of labeled columns
-function labeledColsRows(id) {
-  var sheetNum = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-
-  return fetchAndParse(id, sheetNum, 'list', parseLabeledRowsCols);
-}
-
-exports.default = {
-  raw: raw,
-  labeledCols: labeledCols,
-  labeledColsRows: labeledColsRows
-};
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports) {
-
-module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
-
-/***/ })
-/******/ ])["default"];
-});
-
-},{"fetch-jsonp":251}],255:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 var twodarray = require('twodarray');
 var request = require('request');
 var xml2js = require('xml2js');
@@ -42241,8 +41995,7 @@ module.exports = (id, cb)=>{
   if(cb) return resf(cb, cb);
   return new Promise(resf);
 };
-
-},{"request":305,"twodarray":352,"xml2js":364}],256:[function(require,module,exports){
+},{"request":303,"twodarray":350,"xml2js":362}],254:[function(require,module,exports){
 module.exports={
   "$id": "afterRequest.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42274,7 +42027,7 @@ module.exports={
   }
 }
 
-},{}],257:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 module.exports={
   "$id": "beforeRequest.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42306,7 +42059,7 @@ module.exports={
   }
 }
 
-},{}],258:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 module.exports={
   "$id": "browser.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42328,7 +42081,7 @@ module.exports={
   }
 }
 
-},{}],259:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 module.exports={
   "$id": "cache.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42351,7 +42104,7 @@ module.exports={
   }
 }
 
-},{}],260:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
 module.exports={
   "$id": "content.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42382,7 +42135,7 @@ module.exports={
   }
 }
 
-},{}],261:[function(require,module,exports){
+},{}],259:[function(require,module,exports){
 module.exports={
   "$id": "cookie.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42420,7 +42173,7 @@ module.exports={
   }
 }
 
-},{}],262:[function(require,module,exports){
+},{}],260:[function(require,module,exports){
 module.exports={
   "$id": "creator.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42442,7 +42195,7 @@ module.exports={
   }
 }
 
-},{}],263:[function(require,module,exports){
+},{}],261:[function(require,module,exports){
 module.exports={
   "$id": "entry.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42497,7 +42250,7 @@ module.exports={
   }
 }
 
-},{}],264:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 module.exports={
   "$id": "har.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42512,7 +42265,7 @@ module.exports={
   }
 }
 
-},{}],265:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 module.exports={
   "$id": "header.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42534,7 +42287,7 @@ module.exports={
   }
 }
 
-},{}],266:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -42558,7 +42311,7 @@ module.exports = {
   timings: require('./timings.json')
 }
 
-},{"./afterRequest.json":256,"./beforeRequest.json":257,"./browser.json":258,"./cache.json":259,"./content.json":260,"./cookie.json":261,"./creator.json":262,"./entry.json":263,"./har.json":264,"./header.json":265,"./log.json":267,"./page.json":268,"./pageTimings.json":269,"./postData.json":270,"./query.json":271,"./request.json":272,"./response.json":273,"./timings.json":274}],267:[function(require,module,exports){
+},{"./afterRequest.json":254,"./beforeRequest.json":255,"./browser.json":256,"./cache.json":257,"./content.json":258,"./cookie.json":259,"./creator.json":260,"./entry.json":261,"./har.json":262,"./header.json":263,"./log.json":265,"./page.json":266,"./pageTimings.json":267,"./postData.json":268,"./query.json":269,"./request.json":270,"./response.json":271,"./timings.json":272}],265:[function(require,module,exports){
 module.exports={
   "$id": "log.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42596,7 +42349,7 @@ module.exports={
   }
 }
 
-},{}],268:[function(require,module,exports){
+},{}],266:[function(require,module,exports){
 module.exports={
   "$id": "page.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42630,7 +42383,7 @@ module.exports={
   }
 }
 
-},{}],269:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 module.exports={
   "$id": "pageTimings.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42650,7 +42403,7 @@ module.exports={
   }
 }
 
-},{}],270:[function(require,module,exports){
+},{}],268:[function(require,module,exports){
 module.exports={
   "$id": "postData.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42695,7 +42448,7 @@ module.exports={
   }
 }
 
-},{}],271:[function(require,module,exports){
+},{}],269:[function(require,module,exports){
 module.exports={
   "$id": "query.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42717,7 +42470,7 @@ module.exports={
   }
 }
 
-},{}],272:[function(require,module,exports){
+},{}],270:[function(require,module,exports){
 module.exports={
   "$id": "request.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42776,7 +42529,7 @@ module.exports={
   }
 }
 
-},{}],273:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 module.exports={
   "$id": "response.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42832,7 +42585,7 @@ module.exports={
   }
 }
 
-},{}],274:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 module.exports={
   "$id": "timings.json#",
   "$schema": "http://json-schema.org/draft-06/schema#",
@@ -42876,7 +42629,7 @@ module.exports={
   }
 }
 
-},{}],275:[function(require,module,exports){
+},{}],273:[function(require,module,exports){
 function HARError (errors) {
   var message = 'validation failed'
 
@@ -42895,7 +42648,7 @@ HARError.prototype = Error.prototype
 
 module.exports = HARError
 
-},{}],276:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 var Ajv = require('ajv')
 var HARError = require('./error')
 var schemas = require('har-schema')
@@ -42992,7 +42745,7 @@ exports.timings = function (data) {
   return validate('timings', data)
 }
 
-},{"./error":275,"ajv":190,"har-schema":266}],277:[function(require,module,exports){
+},{"./error":273,"ajv":190,"har-schema":264}],275:[function(require,module,exports){
 'use strict';
 
 /*
@@ -43787,7 +43540,7 @@ if (typeof module !== 'undefined' && module.exports) {
 /* eslint-enable */
 // $lab:coverage:on$
 
-},{}],278:[function(require,module,exports){
+},{}],276:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var parser = require('./parser');
@@ -43818,7 +43571,7 @@ module.exports = {
   verifyHMAC: verify.verifyHMAC
 };
 
-},{"./parser":279,"./signer":280,"./utils":281,"./verify":282}],279:[function(require,module,exports){
+},{"./parser":277,"./signer":278,"./utils":279,"./verify":280}],277:[function(require,module,exports){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 var assert = require('assert-plus');
@@ -44135,7 +43888,7 @@ module.exports = {
 
 };
 
-},{"./utils":281,"assert-plus":235,"util":185}],280:[function(require,module,exports){
+},{"./utils":279,"assert-plus":235,"util":185}],278:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
@@ -44540,7 +44293,7 @@ module.exports = {
 };
 
 }).call(this,{"isBuffer":require("../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js")})
-},{"../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js":107,"./utils":281,"assert-plus":235,"crypto":60,"http":173,"jsprim":293,"sshpk":336,"util":185}],281:[function(require,module,exports){
+},{"../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js":107,"./utils":279,"assert-plus":235,"crypto":60,"http":173,"jsprim":291,"sshpk":334,"util":185}],279:[function(require,module,exports){
 // Copyright 2012 Joyent, Inc.  All rights reserved.
 
 var assert = require('assert-plus');
@@ -44654,7 +44407,7 @@ module.exports = {
   }
 };
 
-},{"assert-plus":235,"sshpk":336,"util":185}],282:[function(require,module,exports){
+},{"assert-plus":235,"sshpk":334,"util":185}],280:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -44746,7 +44499,7 @@ module.exports = {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./utils":281,"assert-plus":235,"buffer":50,"crypto":60,"sshpk":336}],283:[function(require,module,exports){
+},{"./utils":279,"assert-plus":235,"buffer":50,"crypto":60,"sshpk":334}],281:[function(require,module,exports){
 module.exports      = isTypedArray
 isTypedArray.strict = isStrictTypedArray
 isTypedArray.loose  = isLooseTypedArray
@@ -44789,7 +44542,7 @@ function isLooseTypedArray(arr) {
   return names[toString.call(arr)]
 }
 
-},{}],284:[function(require,module,exports){
+},{}],282:[function(require,module,exports){
 var stream = require('stream')
 
 
@@ -44818,7 +44571,7 @@ module.exports.isReadable = isReadable
 module.exports.isWritable = isWritable
 module.exports.isDuplex   = isDuplex
 
-},{"stream":172}],285:[function(require,module,exports){
+},{"stream":172}],283:[function(require,module,exports){
 (function(){
 
     // Copyright (c) 2005  Tom Wu
@@ -46177,7 +45930,7 @@ module.exports.isDuplex   = isDuplex
 
 }).call(this);
 
-},{}],286:[function(require,module,exports){
+},{}],284:[function(require,module,exports){
 'use strict';
 
 var traverse = module.exports = function (schema, opts, cb) {
@@ -46260,7 +46013,7 @@ function escapeJsonPtr(str) {
   return str.replace(/~/g, '~0').replace(/\//g, '~1');
 }
 
-},{}],287:[function(require,module,exports){
+},{}],285:[function(require,module,exports){
 /**
  * JSONSchema Validator - Validates JavaScript objects using JSON Schemas
  *	(http://www.json.com/json-schema-proposal/)
@@ -46470,8 +46223,8 @@ var validate = exports._validate = function(/*Any*/instance,/*Object*/schema,/*O
 			if(typeof instance != 'object' || instance instanceof Array){
 				errors.push({property:path,message:"an object is required"});
 			}
-			
-			for(var i in objTypeDef){ 
+
+			for(var i in objTypeDef){
 				if(objTypeDef.hasOwnProperty(i)){
 					var value = instance[i];
 					// skip _not_ specified properties
@@ -46535,7 +46288,7 @@ exports.mustBeValid = function(result){
 return exports;
 }));
 
-},{}],288:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 var json = typeof JSON !== 'undefined' ? JSON : require('jsonify');
 
 module.exports = function (obj, opts) {
@@ -46621,7 +46374,7 @@ var objectKeys = Object.keys || function (obj) {
     return keys;
 };
 
-},{"jsonify":290}],289:[function(require,module,exports){
+},{"jsonify":288}],287:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -46650,11 +46403,11 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],290:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 exports.parse = require('./lib/parse');
 exports.stringify = require('./lib/stringify');
 
-},{"./lib/parse":291,"./lib/stringify":292}],291:[function(require,module,exports){
+},{"./lib/parse":289,"./lib/stringify":290}],289:[function(require,module,exports){
 var at, // The index of the current character
     ch, // The current character
     escapee = {
@@ -46678,26 +46431,26 @@ var at, // The index of the current character
             text:    text
         };
     },
-    
+
     next = function (c) {
         // If a c parameter is provided, verify that it matches the current character.
         if (c && c !== ch) {
             error("Expected '" + c + "' instead of '" + ch + "'");
         }
-        
+
         // Get the next character. When there are no more characters,
         // return the empty string.
-        
+
         ch = text.charAt(at);
         at += 1;
         return ch;
     },
-    
+
     number = function () {
         // Parse a number value.
         var number,
             string = '';
-        
+
         if (ch === '-') {
             string = '-';
             next('-');
@@ -46731,14 +46484,14 @@ var at, // The index of the current character
             return number;
         }
     },
-    
+
     string = function () {
         // Parse a string value.
         var hex,
             i,
             string = '',
             uffff;
-        
+
         // When parsing for string values, we must look for " and \ characters.
         if (ch === '"') {
             while (next()) {
@@ -46895,7 +46648,7 @@ value = function () {
 
 module.exports = function (source, reviver) {
     var result;
-    
+
     text = source;
     at = 0;
     ch = ' ';
@@ -46929,7 +46682,7 @@ module.exports = function (source, reviver) {
     }({'': result}, '')) : result;
 };
 
-},{}],292:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 var cx = /[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     escapable = /[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,
     gap,
@@ -46950,7 +46703,7 @@ function quote(string) {
     // backslash characters, then we can safely slap some quotes around it.
     // Otherwise we must also replace the offending characters with safe escape
     // sequences.
-    
+
     escapable.lastIndex = 0;
     return escapable.test(string) ? '"' + string.replace(escapable, function (a) {
         var c = meta[a];
@@ -46968,47 +46721,47 @@ function str(key, holder) {
         mind = gap,
         partial,
         value = holder[key];
-    
+
     // If the value has a toJSON method, call it to obtain a replacement value.
     if (value && typeof value === 'object' &&
             typeof value.toJSON === 'function') {
         value = value.toJSON(key);
     }
-    
+
     // If we were called with a replacer function, then call the replacer to
     // obtain a replacement value.
     if (typeof rep === 'function') {
         value = rep.call(holder, key, value);
     }
-    
+
     // What happens next depends on the value's type.
     switch (typeof value) {
         case 'string':
             return quote(value);
-        
+
         case 'number':
             // JSON numbers must be finite. Encode non-finite numbers as null.
             return isFinite(value) ? String(value) : 'null';
-        
+
         case 'boolean':
         case 'null':
             // If the value is a boolean or null, convert it to a string. Note:
             // typeof null does not produce 'null'. The case is included here in
             // the remote chance that this gets fixed someday.
             return String(value);
-            
+
         case 'object':
             if (!value) return 'null';
             gap += indent;
             partial = [];
-            
+
             // Array.isArray
             if (Object.prototype.toString.apply(value) === '[object Array]') {
                 length = value.length;
                 for (i = 0; i < length; i += 1) {
                     partial[i] = str(i, value) || 'null';
                 }
-                
+
                 // Join all of the elements together, separated with commas, and
                 // wrap them in brackets.
                 v = partial.length === 0 ? '[]' : gap ?
@@ -47017,7 +46770,7 @@ function str(key, holder) {
                 gap = mind;
                 return v;
             }
-            
+
             // If the replacer is an array, use it to select the members to be
             // stringified.
             if (rep && typeof rep === 'object') {
@@ -47043,7 +46796,7 @@ function str(key, holder) {
                     }
                 }
             }
-            
+
         // Join all of the member texts together, separated with commas,
         // and wrap them in braces.
 
@@ -47059,7 +46812,7 @@ module.exports = function (value, replacer, space) {
     var i;
     gap = '';
     indent = '';
-    
+
     // If the space parameter is a number, make an indent string containing that
     // many spaces.
     if (typeof space === 'number') {
@@ -47079,13 +46832,13 @@ module.exports = function (value, replacer, space) {
     && (typeof replacer !== 'object' || typeof replacer.length !== 'number')) {
         throw new Error('JSON.stringify');
     }
-    
+
     // Make a fake root object containing our value under the key of ''.
     // Return the result of stringifying the value.
     return str('', {'': value});
 };
 
-},{}],293:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 /*
  * lib/jsprim.js: utilities for primitive JavaScript types
  */
@@ -47822,7 +47575,7 @@ function mergeObjects(provided, overrides, defaults)
 	return (rv);
 }
 
-},{"assert-plus":235,"extsprintf":249,"json-schema":287,"util":185,"verror":358}],294:[function(require,module,exports){
+},{"assert-plus":235,"extsprintf":249,"json-schema":285,"util":185,"verror":356}],292:[function(require,module,exports){
 module.exports={
   "application/1d-interleaved-parityfec": {
     "source": "iana"
@@ -54790,7 +54543,7 @@ module.exports={
   }
 }
 
-},{}],295:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 /*!
  * mime-db
  * Copyright(c) 2014 Jonathan Ong
@@ -54803,7 +54556,7 @@ module.exports={
 
 module.exports = require('./db.json')
 
-},{"./db.json":294}],296:[function(require,module,exports){
+},{"./db.json":292}],294:[function(require,module,exports){
 /*!
  * mime-types
  * Copyright(c) 2014 Jonathan Ong
@@ -54993,9 +54746,9 @@ function populateMaps (extensions, types) {
   })
 }
 
-},{"mime-db":295,"path":130}],297:[function(require,module,exports){
+},{"mime-db":293,"path":130}],295:[function(require,module,exports){
 //! moment.js
-//! version : 2.18.1
+//! version : 2.19.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -55029,12 +54782,17 @@ function isObject(input) {
 }
 
 function isObjectEmpty(obj) {
-    var k;
-    for (k in obj) {
-        // even if its not own property I'd still call it non-empty
-        return false;
+    if (Object.getOwnPropertyNames) {
+        return (Object.getOwnPropertyNames(obj).length === 0);
+    } else {
+        var k;
+        for (k in obj) {
+            if (obj.hasOwnProperty(k)) {
+                return false;
+            }
+        }
+        return true;
     }
-    return true;
 }
 
 function isUndefined(input) {
@@ -55128,12 +54886,10 @@ if (Array.prototype.some) {
     };
 }
 
-var some$1 = some;
-
 function isValid(m) {
     if (m._isValid == null) {
         var flags = getParsingFlags(m);
-        var parsedParts = some$1.call(flags.parsedDateParts, function (i) {
+        var parsedParts = some.call(flags.parsedDateParts, function (i) {
             return i != null;
         });
         var isNowValid = !isNaN(m._d.getTime()) &&
@@ -55141,6 +54897,7 @@ function isValid(m) {
             !flags.empty &&
             !flags.invalidMonth &&
             !flags.invalidWeekday &&
+            !flags.weekdayMismatch &&
             !flags.nullInput &&
             !flags.invalidFormat &&
             !flags.userInvalidated &&
@@ -55406,8 +55163,6 @@ if (Object.keys) {
     };
 }
 
-var keys$1 = keys;
-
 var defaultCalendar = {
     sameDay : '[Today at] LT',
     nextDay : '[Tomorrow at] LT',
@@ -55531,56 +55286,6 @@ function getPrioritizedUnits(unitsObj) {
         return a.priority - b.priority;
     });
     return units;
-}
-
-function makeGetSet (unit, keepTime) {
-    return function (value) {
-        if (value != null) {
-            set$1(this, unit, value);
-            hooks.updateOffset(this, keepTime);
-            return this;
-        } else {
-            return get(this, unit);
-        }
-    };
-}
-
-function get (mom, unit) {
-    return mom.isValid() ?
-        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
-}
-
-function set$1 (mom, unit, value) {
-    if (mom.isValid()) {
-        mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
-    }
-}
-
-// MOMENTS
-
-function stringGet (units) {
-    units = normalizeUnits(units);
-    if (isFunction(this[units])) {
-        return this[units]();
-    }
-    return this;
-}
-
-
-function stringSet (units, value) {
-    if (typeof units === 'object') {
-        units = normalizeObjectUnits(units);
-        var prioritized = getPrioritizedUnits(units);
-        for (var i = 0; i < prioritized.length; i++) {
-            this[prioritized[i].unit](units[prioritized[i].unit]);
-        }
-    } else {
-        units = normalizeUnits(units);
-        if (isFunction(this[units])) {
-            return this[units](value);
-        }
-    }
-    return this;
 }
 
 function zeroFill(number, targetLength, forceSign) {
@@ -55773,6 +55478,131 @@ var MILLISECOND = 6;
 var WEEK = 7;
 var WEEKDAY = 8;
 
+// FORMATTING
+
+addFormatToken('Y', 0, 0, function () {
+    var y = this.year();
+    return y <= 9999 ? '' + y : '+' + y;
+});
+
+addFormatToken(0, ['YY', 2], 0, function () {
+    return this.year() % 100;
+});
+
+addFormatToken(0, ['YYYY',   4],       0, 'year');
+addFormatToken(0, ['YYYYY',  5],       0, 'year');
+addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
+
+// ALIASES
+
+addUnitAlias('year', 'y');
+
+// PRIORITIES
+
+addUnitPriority('year', 1);
+
+// PARSING
+
+addRegexToken('Y',      matchSigned);
+addRegexToken('YY',     match1to2, match2);
+addRegexToken('YYYY',   match1to4, match4);
+addRegexToken('YYYYY',  match1to6, match6);
+addRegexToken('YYYYYY', match1to6, match6);
+
+addParseToken(['YYYYY', 'YYYYYY'], YEAR);
+addParseToken('YYYY', function (input, array) {
+    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
+});
+addParseToken('YY', function (input, array) {
+    array[YEAR] = hooks.parseTwoDigitYear(input);
+});
+addParseToken('Y', function (input, array) {
+    array[YEAR] = parseInt(input, 10);
+});
+
+// HELPERS
+
+function daysInYear(year) {
+    return isLeapYear(year) ? 366 : 365;
+}
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+}
+
+// HOOKS
+
+hooks.parseTwoDigitYear = function (input) {
+    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
+};
+
+// MOMENTS
+
+var getSetYear = makeGetSet('FullYear', true);
+
+function getIsLeapYear () {
+    return isLeapYear(this.year());
+}
+
+function makeGetSet (unit, keepTime) {
+    return function (value) {
+        if (value != null) {
+            set$1(this, unit, value);
+            hooks.updateOffset(this, keepTime);
+            return this;
+        } else {
+            return get(this, unit);
+        }
+    };
+}
+
+function get (mom, unit) {
+    return mom.isValid() ?
+        mom._d['get' + (mom._isUTC ? 'UTC' : '') + unit]() : NaN;
+}
+
+function set$1 (mom, unit, value) {
+    if (mom.isValid() && !isNaN(value)) {
+        if (unit === 'FullYear' && isLeapYear(mom.year())) {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value, mom.month(), daysInMonth(value, mom.month()));
+        }
+        else {
+            mom._d['set' + (mom._isUTC ? 'UTC' : '') + unit](value);
+        }
+    }
+}
+
+// MOMENTS
+
+function stringGet (units) {
+    units = normalizeUnits(units);
+    if (isFunction(this[units])) {
+        return this[units]();
+    }
+    return this;
+}
+
+
+function stringSet (units, value) {
+    if (typeof units === 'object') {
+        units = normalizeObjectUnits(units);
+        var prioritized = getPrioritizedUnits(units);
+        for (var i = 0; i < prioritized.length; i++) {
+            this[prioritized[i].unit](units[prioritized[i].unit]);
+        }
+    } else {
+        units = normalizeUnits(units);
+        if (isFunction(this[units])) {
+            return this[units](value);
+        }
+    }
+    return this;
+}
+
+function mod(n, x) {
+    return ((n % x) + x) % x;
+}
+
 var indexOf;
 
 if (Array.prototype.indexOf) {
@@ -55790,10 +55620,13 @@ if (Array.prototype.indexOf) {
     };
 }
 
-var indexOf$1 = indexOf;
-
 function daysInMonth(year, month) {
-    return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
+    if (isNaN(year) || isNaN(month)) {
+        return NaN;
+    }
+    var modMonth = mod(month, 12);
+    year += (month - modMonth) / 12;
+    return modMonth === 1 ? (isLeapYear(year) ? 29 : 28) : (31 - modMonth % 7 % 2);
 }
 
 // FORMATTING
@@ -55882,26 +55715,26 @@ function handleStrictParse(monthName, format, strict) {
 
     if (strict) {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'MMM') {
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._longMonthsParse, llc);
+            ii = indexOf.call(this._longMonthsParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortMonthsParse, llc);
+            ii = indexOf.call(this._shortMonthsParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -56058,72 +55891,6 @@ function computeMonthsParse () {
     this._monthsShortRegex = this._monthsRegex;
     this._monthsStrictRegex = new RegExp('^(' + longPieces.join('|') + ')', 'i');
     this._monthsShortStrictRegex = new RegExp('^(' + shortPieces.join('|') + ')', 'i');
-}
-
-// FORMATTING
-
-addFormatToken('Y', 0, 0, function () {
-    var y = this.year();
-    return y <= 9999 ? '' + y : '+' + y;
-});
-
-addFormatToken(0, ['YY', 2], 0, function () {
-    return this.year() % 100;
-});
-
-addFormatToken(0, ['YYYY',   4],       0, 'year');
-addFormatToken(0, ['YYYYY',  5],       0, 'year');
-addFormatToken(0, ['YYYYYY', 6, true], 0, 'year');
-
-// ALIASES
-
-addUnitAlias('year', 'y');
-
-// PRIORITIES
-
-addUnitPriority('year', 1);
-
-// PARSING
-
-addRegexToken('Y',      matchSigned);
-addRegexToken('YY',     match1to2, match2);
-addRegexToken('YYYY',   match1to4, match4);
-addRegexToken('YYYYY',  match1to6, match6);
-addRegexToken('YYYYYY', match1to6, match6);
-
-addParseToken(['YYYYY', 'YYYYYY'], YEAR);
-addParseToken('YYYY', function (input, array) {
-    array[YEAR] = input.length === 2 ? hooks.parseTwoDigitYear(input) : toInt(input);
-});
-addParseToken('YY', function (input, array) {
-    array[YEAR] = hooks.parseTwoDigitYear(input);
-});
-addParseToken('Y', function (input, array) {
-    array[YEAR] = parseInt(input, 10);
-});
-
-// HELPERS
-
-function daysInYear(year) {
-    return isLeapYear(year) ? 366 : 365;
-}
-
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
-}
-
-// HOOKS
-
-hooks.parseTwoDigitYear = function (input) {
-    return toInt(input) + (toInt(input) > 68 ? 1900 : 2000);
-};
-
-// MOMENTS
-
-var getSetYear = makeGetSet('FullYear', true);
-
-function getIsLeapYear () {
-    return isLeapYear(this.year());
 }
 
 function createDate (y, m, d, h, M, s, ms) {
@@ -56393,48 +56160,48 @@ function handleStrictParse$1(weekdayName, format, strict) {
 
     if (strict) {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     } else {
         if (format === 'dddd') {
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else if (format === 'ddd') {
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         } else {
-            ii = indexOf$1.call(this._minWeekdaysParse, llc);
+            ii = indexOf.call(this._minWeekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._weekdaysParse, llc);
+            ii = indexOf.call(this._weekdaysParse, llc);
             if (ii !== -1) {
                 return ii;
             }
-            ii = indexOf$1.call(this._shortWeekdaysParse, llc);
+            ii = indexOf.call(this._shortWeekdaysParse, llc);
             return ii !== -1 ? ii : null;
         }
     }
@@ -56823,11 +56590,10 @@ function loadLocale(name) {
             module && module.exports) {
         try {
             oldLocale = globalLocale._abbr;
-            require('./locale/' + name);
-            // because defineLocale currently also sets the global locale, we
-            // want to undo that for lazy loaded locales
+            var aliasedRequire = require;
+            aliasedRequire('./locale/' + name);
             getSetGlobalLocale(oldLocale);
-        } catch (e) { }
+        } catch (e) {}
     }
     return locales[name];
 }
@@ -56953,7 +56719,7 @@ function getLocale (key) {
 }
 
 function listLocales() {
-    return keys$1(locales);
+    return keys(locales);
 }
 
 function checkOverflow (m) {
@@ -56984,6 +56750,154 @@ function checkOverflow (m) {
     }
 
     return m;
+}
+
+// Pick the first defined of two or three arguments.
+function defaults(a, b, c) {
+    if (a != null) {
+        return a;
+    }
+    if (b != null) {
+        return b;
+    }
+    return c;
+}
+
+function currentDateArray(config) {
+    // hooks is actually the exported moment object
+    var nowValue = new Date(hooks.now());
+    if (config._useUTC) {
+        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
+    }
+    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
+}
+
+// convert an array to a date.
+// the array should mirror the parameters below
+// note: all values past the year are optional and will default to the lowest possible value.
+// [year, month, day , hour, minute, second, millisecond]
+function configFromArray (config) {
+    var i, date, input = [], currentDate, yearToUse;
+
+    if (config._d) {
+        return;
+    }
+
+    currentDate = currentDateArray(config);
+
+    //compute day of the year from weeks and weekdays
+    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
+        dayOfYearFromWeekInfo(config);
+    }
+
+    //if the day of the year is set, figure out what it is
+    if (config._dayOfYear != null) {
+        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
+
+        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
+            getParsingFlags(config)._overflowDayOfYear = true;
+        }
+
+        date = createUTCDate(yearToUse, 0, config._dayOfYear);
+        config._a[MONTH] = date.getUTCMonth();
+        config._a[DATE] = date.getUTCDate();
+    }
+
+    // Default to current date.
+    // * if no year, month, day of month are given, default to today
+    // * if day of month is given, default month and year
+    // * if month is given, default only year
+    // * if year is given, don't default anything
+    for (i = 0; i < 3 && config._a[i] == null; ++i) {
+        config._a[i] = input[i] = currentDate[i];
+    }
+
+    // Zero out whatever was not defaulted, including time
+    for (; i < 7; i++) {
+        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
+    }
+
+    // Check for 24:00:00.000
+    if (config._a[HOUR] === 24 &&
+            config._a[MINUTE] === 0 &&
+            config._a[SECOND] === 0 &&
+            config._a[MILLISECOND] === 0) {
+        config._nextDay = true;
+        config._a[HOUR] = 0;
+    }
+
+    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    // Apply timezone offset from input. The actual utcOffset can be changed
+    // with parseZone.
+    if (config._tzm != null) {
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+    }
+
+    if (config._nextDay) {
+        config._a[HOUR] = 24;
+    }
+
+    // check for mismatching day of week
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== config._d.getDay()) {
+        getParsingFlags(config).weekdayMismatch = true;
+    }
+}
+
+function dayOfYearFromWeekInfo(config) {
+    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
+
+    w = config._w;
+    if (w.GG != null || w.W != null || w.E != null) {
+        dow = 1;
+        doy = 4;
+
+        // TODO: We need to take the current isoWeekYear, but that depends on
+        // how we interpret now (local, utc, fixed offset). So create
+        // a now version of current config (take local/utc/offset flags, and
+        // create now).
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
+        week = defaults(w.W, 1);
+        weekday = defaults(w.E, 1);
+        if (weekday < 1 || weekday > 7) {
+            weekdayOverflow = true;
+        }
+    } else {
+        dow = config._locale._week.dow;
+        doy = config._locale._week.doy;
+
+        var curWeek = weekOfYear(createLocal(), dow, doy);
+
+        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
+
+        // Default to current week.
+        week = defaults(w.w, curWeek.week);
+
+        if (w.d != null) {
+            // weekday -- low day numbers are considered next week
+            weekday = w.d;
+            if (weekday < 0 || weekday > 6) {
+                weekdayOverflow = true;
+            }
+        } else if (w.e != null) {
+            // local weekday -- counting starts from begining of week
+            weekday = w.e + dow;
+            if (w.e < 0 || w.e > 6) {
+                weekdayOverflow = true;
+            }
+        } else {
+            // default to begining of week
+            weekday = dow;
+        }
+    }
+    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
+        getParsingFlags(config)._overflowWeeks = true;
+    } else if (weekdayOverflow != null) {
+        getParsingFlags(config)._overflowWeekday = true;
+    } else {
+        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
+        config._a[YEAR] = temp.year;
+        config._dayOfYear = temp.dayOfYear;
+    }
 }
 
 // iso 8601 regex
@@ -57077,70 +56991,94 @@ function configFromISO(config) {
 }
 
 // RFC 2822 regex: For details see https://tools.ietf.org/html/rfc2822#section-3.3
-var basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+var rfc2822 = /^(?:(Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d{1,2})\s(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(\d{2,4})\s(\d\d):(\d\d)(?::(\d\d))?\s(?:(UT|GMT|[ECMP][SD]T)|([Zz])|([+-]\d{4}))$/;
+
+function extractFromRFC2822Strings(yearStr, monthStr, dayStr, hourStr, minuteStr, secondStr) {
+    var result = [
+        untruncateYear(yearStr),
+        defaultLocaleMonthsShort.indexOf(monthStr),
+        parseInt(dayStr, 10),
+        parseInt(hourStr, 10),
+        parseInt(minuteStr, 10)
+    ];
+
+    if (secondStr) {
+        result.push(parseInt(secondStr, 10));
+    }
+
+    return result;
+}
+
+function untruncateYear(yearStr) {
+    var year = parseInt(yearStr, 10);
+    if (year <= 49) {
+        return 2000 + year;
+    } else if (year <= 999) {
+        return 1900 + year;
+    }
+    return year;
+}
+
+function preprocessRFC2822(s) {
+    // Remove comments and folding whitespace and replace multiple-spaces with a single space
+    return s.replace(/\([^)]*\)|[\n\t]/g, ' ').replace(/(\s\s+)/g, ' ').trim();
+}
+
+function checkWeekday(weekdayStr, parsedInput, config) {
+    if (weekdayStr) {
+        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
+        var weekdayProvided = defaultLocaleWeekdaysShort.indexOf(weekdayStr),
+            weekdayActual = new Date(parsedInput[0], parsedInput[1], parsedInput[2]).getDay();
+        if (weekdayProvided !== weekdayActual) {
+            getParsingFlags(config).weekdayMismatch = true;
+            config._isValid = false;
+            return false;
+        }
+    }
+    return true;
+}
+
+var obsOffsets = {
+    UT: 0,
+    GMT: 0,
+    EDT: -4 * 60,
+    EST: -5 * 60,
+    CDT: -5 * 60,
+    CST: -6 * 60,
+    MDT: -6 * 60,
+    MST: -7 * 60,
+    PDT: -7 * 60,
+    PST: -8 * 60
+};
+
+function calculateOffset(obsOffset, militaryOffset, numOffset) {
+    if (obsOffset) {
+        return obsOffsets[obsOffset];
+    } else if (militaryOffset) {
+        // the only allowed military tz is Z
+        return 0;
+    } else {
+        var hm = parseInt(numOffset, 10);
+        var m = hm % 100, h = (hm - m) / 100;
+        return h * 60 + m;
+    }
+}
 
 // date and time from ref 2822 format
 function configFromRFC2822(config) {
-    var string, match, dayFormat,
-        dateFormat, timeFormat, tzFormat;
-    var timezones = {
-        ' GMT': ' +0000',
-        ' EDT': ' -0400',
-        ' EST': ' -0500',
-        ' CDT': ' -0500',
-        ' CST': ' -0600',
-        ' MDT': ' -0600',
-        ' MST': ' -0700',
-        ' PDT': ' -0700',
-        ' PST': ' -0800'
-    };
-    var military = 'YXWVUTSRQPONZABCDEFGHIKLM';
-    var timezone, timezoneIndex;
-
-    string = config._i
-        .replace(/\([^\)]*\)|[\n\t]/g, ' ') // Remove comments and folding whitespace
-        .replace(/(\s\s+)/g, ' ') // Replace multiple-spaces with a single space
-        .replace(/^\s|\s$/g, ''); // Remove leading and trailing spaces
-    match = basicRfcRegex.exec(string);
-
+    var match = rfc2822.exec(preprocessRFC2822(config._i));
     if (match) {
-        dayFormat = match[1] ? 'ddd' + ((match[1].length === 5) ? ', ' : ' ') : '';
-        dateFormat = 'D MMM ' + ((match[2].length > 10) ? 'YYYY ' : 'YY ');
-        timeFormat = 'HH:mm' + (match[4] ? ':ss' : '');
-
-        // TODO: Replace the vanilla JS Date object with an indepentent day-of-week check.
-        if (match[1]) { // day of week given
-            var momentDate = new Date(match[2]);
-            var momentDay = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][momentDate.getDay()];
-
-            if (match[1].substr(0,3) !== momentDay) {
-                getParsingFlags(config).weekdayMismatch = true;
-                config._isValid = false;
-                return;
-            }
+        var parsedArray = extractFromRFC2822Strings(match[4], match[3], match[2], match[5], match[6], match[7]);
+        if (!checkWeekday(match[1], parsedArray, config)) {
+            return;
         }
 
-        switch (match[5].length) {
-            case 2: // military
-                if (timezoneIndex === 0) {
-                    timezone = ' +0000';
-                } else {
-                    timezoneIndex = military.indexOf(match[5][1].toUpperCase()) - 12;
-                    timezone = ((timezoneIndex < 0) ? ' -' : ' +') +
-                        (('' + timezoneIndex).replace(/^-?/, '0')).match(/..$/)[0] + '00';
-                }
-                break;
-            case 4: // Zone
-                timezone = timezones[match[5]];
-                break;
-            default: // UT or +/-9999
-                timezone = timezones[' GMT'];
-        }
-        match[5] = timezone;
-        config._i = match.splice(1).join('');
-        tzFormat = ' ZZ';
-        config._f = dayFormat + dateFormat + timeFormat + tzFormat;
-        configFromStringAndFormat(config);
+        config._a = parsedArray;
+        config._tzm = calculateOffset(match[8], match[9], match[10]);
+
+        config._d = createUTCDate.apply(null, config._a);
+        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
+
         getParsingFlags(config).rfc2822 = true;
     } else {
         config._isValid = false;
@@ -57183,149 +57121,6 @@ hooks.createFromInputFallback = deprecate(
         config._d = new Date(config._i + (config._useUTC ? ' UTC' : ''));
     }
 );
-
-// Pick the first defined of two or three arguments.
-function defaults(a, b, c) {
-    if (a != null) {
-        return a;
-    }
-    if (b != null) {
-        return b;
-    }
-    return c;
-}
-
-function currentDateArray(config) {
-    // hooks is actually the exported moment object
-    var nowValue = new Date(hooks.now());
-    if (config._useUTC) {
-        return [nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate()];
-    }
-    return [nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate()];
-}
-
-// convert an array to a date.
-// the array should mirror the parameters below
-// note: all values past the year are optional and will default to the lowest possible value.
-// [year, month, day , hour, minute, second, millisecond]
-function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
-
-    if (config._d) {
-        return;
-    }
-
-    currentDate = currentDateArray(config);
-
-    //compute day of the year from weeks and weekdays
-    if (config._w && config._a[DATE] == null && config._a[MONTH] == null) {
-        dayOfYearFromWeekInfo(config);
-    }
-
-    //if the day of the year is set, figure out what it is
-    if (config._dayOfYear != null) {
-        yearToUse = defaults(config._a[YEAR], currentDate[YEAR]);
-
-        if (config._dayOfYear > daysInYear(yearToUse) || config._dayOfYear === 0) {
-            getParsingFlags(config)._overflowDayOfYear = true;
-        }
-
-        date = createUTCDate(yearToUse, 0, config._dayOfYear);
-        config._a[MONTH] = date.getUTCMonth();
-        config._a[DATE] = date.getUTCDate();
-    }
-
-    // Default to current date.
-    // * if no year, month, day of month are given, default to today
-    // * if day of month is given, default month and year
-    // * if month is given, default only year
-    // * if year is given, don't default anything
-    for (i = 0; i < 3 && config._a[i] == null; ++i) {
-        config._a[i] = input[i] = currentDate[i];
-    }
-
-    // Zero out whatever was not defaulted, including time
-    for (; i < 7; i++) {
-        config._a[i] = input[i] = (config._a[i] == null) ? (i === 2 ? 1 : 0) : config._a[i];
-    }
-
-    // Check for 24:00:00.000
-    if (config._a[HOUR] === 24 &&
-            config._a[MINUTE] === 0 &&
-            config._a[SECOND] === 0 &&
-            config._a[MILLISECOND] === 0) {
-        config._nextDay = true;
-        config._a[HOUR] = 0;
-    }
-
-    config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
-    // Apply timezone offset from input. The actual utcOffset can be changed
-    // with parseZone.
-    if (config._tzm != null) {
-        config._d.setUTCMinutes(config._d.getUTCMinutes() - config._tzm);
-    }
-
-    if (config._nextDay) {
-        config._a[HOUR] = 24;
-    }
-}
-
-function dayOfYearFromWeekInfo(config) {
-    var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-
-    w = config._w;
-    if (w.GG != null || w.W != null || w.E != null) {
-        dow = 1;
-        doy = 4;
-
-        // TODO: We need to take the current isoWeekYear, but that depends on
-        // how we interpret now (local, utc, fixed offset). So create
-        // a now version of current config (take local/utc/offset flags, and
-        // create now).
-        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year);
-        week = defaults(w.W, 1);
-        weekday = defaults(w.E, 1);
-        if (weekday < 1 || weekday > 7) {
-            weekdayOverflow = true;
-        }
-    } else {
-        dow = config._locale._week.dow;
-        doy = config._locale._week.doy;
-
-        var curWeek = weekOfYear(createLocal(), dow, doy);
-
-        weekYear = defaults(w.gg, config._a[YEAR], curWeek.year);
-
-        // Default to current week.
-        week = defaults(w.w, curWeek.week);
-
-        if (w.d != null) {
-            // weekday -- low day numbers are considered next week
-            weekday = w.d;
-            if (weekday < 0 || weekday > 6) {
-                weekdayOverflow = true;
-            }
-        } else if (w.e != null) {
-            // local weekday -- counting starts from begining of week
-            weekday = w.e + dow;
-            if (w.e < 0 || w.e > 6) {
-                weekdayOverflow = true;
-            }
-        } else {
-            // default to begining of week
-            weekday = dow;
-        }
-    }
-    if (week < 1 || week > weeksInYear(weekYear, dow, doy)) {
-        getParsingFlags(config)._overflowWeeks = true;
-    } else if (weekdayOverflow != null) {
-        getParsingFlags(config)._overflowWeekday = true;
-    } else {
-        temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy);
-        config._a[YEAR] = temp.year;
-        config._dayOfYear = temp.dayOfYear;
-    }
-}
 
 // constant that refers to the ISO standard
 hooks.ISO_8601 = function () {};
@@ -57651,7 +57446,7 @@ var ordering = ['year', 'quarter', 'month', 'week', 'day', 'hour', 'minute', 'se
 
 function isDurationValid(m) {
     for (var key in m) {
-        if (!(ordering.indexOf(key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
+        if (!(indexOf.call(ordering, key) !== -1 && (m[key] == null || !isNaN(m[key])))) {
             return false;
         }
     }
@@ -57702,7 +57497,7 @@ function Duration (duration) {
     // day when working around DST, we need to store them separately
     this._days = +days +
         weeks * 7;
-    // It is impossible translate months into days without knowing
+    // It is impossible to translate months into days without knowing
     // which months you are are talking about, so we have to store
     // it separately.
     this._months = +months +
@@ -57949,12 +57744,12 @@ function isUtc () {
 }
 
 // ASP.NET json date format regex
-var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
+var aspNetRegex = /^(\-|\+)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/;
 
 // from http://docs.closure-library.googlecode.com/git/closure_goog_date_date.js.source.html
 // somewhat more in line with 4.4.3.2 2004 spec, but allows decimal anywhere
 // and further modified to allow for strings containing both week and day
-var isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
+var isoRegex = /^(-|\+)?P(?:([-+]?[0-9,.]*)Y)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)W)?(?:([-+]?[0-9,.]*)D)?(?:T(?:([-+]?[0-9,.]*)H)?(?:([-+]?[0-9,.]*)M)?(?:([-+]?[0-9,.]*)S)?)?$/;
 
 function createDuration (input, key) {
     var duration = input,
@@ -57988,7 +57783,7 @@ function createDuration (input, key) {
             ms : toInt(absRound(match[MILLISECOND] * 1000)) * sign // the millisecond decimal point is included in the match
         };
     } else if (!!(match = isoRegex.exec(input))) {
-        sign = (match[1] === '-') ? -1 : 1;
+        sign = (match[1] === '-') ? -1 : (match[1] === '+') ? 1 : 1;
         duration = {
             y : parseIso(match[2], sign),
             M : parseIso(match[3], sign),
@@ -58091,14 +57886,14 @@ function addSubtract (mom, duration, isAdding, updateOffset) {
 
     updateOffset = updateOffset == null ? true : updateOffset;
 
-    if (milliseconds) {
-        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
+    if (months) {
+        setMonth(mom, get(mom, 'Month') + months * isAdding);
     }
     if (days) {
         set$1(mom, 'Date', get(mom, 'Date') + days * isAdding);
     }
-    if (months) {
-        setMonth(mom, get(mom, 'Month') + months * isAdding);
+    if (milliseconds) {
+        mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding);
     }
     if (updateOffset) {
         hooks.updateOffset(mom, days || months);
@@ -58208,22 +58003,18 @@ function diff (input, units, asFloat) {
 
     units = normalizeUnits(units);
 
-    if (units === 'year' || units === 'month' || units === 'quarter') {
-        output = monthDiff(this, that);
-        if (units === 'quarter') {
-            output = output / 3;
-        } else if (units === 'year') {
-            output = output / 12;
-        }
-    } else {
-        delta = this - that;
-        output = units === 'second' ? delta / 1e3 : // 1000
-            units === 'minute' ? delta / 6e4 : // 1000 * 60
-            units === 'hour' ? delta / 36e5 : // 1000 * 60 * 60
-            units === 'day' ? (delta - zoneDelta) / 864e5 : // 1000 * 60 * 60 * 24, negate dst
-            units === 'week' ? (delta - zoneDelta) / 6048e5 : // 1000 * 60 * 60 * 24 * 7, negate dst
-            delta;
+    switch (units) {
+        case 'year': output = monthDiff(this, that) / 12; break;
+        case 'month': output = monthDiff(this, that); break;
+        case 'quarter': output = monthDiff(this, that) / 3; break;
+        case 'second': output = (this - that) / 1e3; break; // 1000
+        case 'minute': output = (this - that) / 6e4; break; // 1000 * 60
+        case 'hour': output = (this - that) / 36e5; break; // 1000 * 60 * 60
+        case 'day': output = (this - that - zoneDelta) / 864e5; break; // 1000 * 60 * 60 * 24, negate dst
+        case 'week': output = (this - that - zoneDelta) / 6048e5; break; // 1000 * 60 * 60 * 24 * 7, negate dst
+        default: output = this - that;
     }
+
     return asFloat ? output : absFloor(output);
 }
 
@@ -59201,6 +58992,10 @@ var asWeeks        = makeAs('w');
 var asMonths       = makeAs('M');
 var asYears        = makeAs('y');
 
+function clone$1 () {
+    return createDuration(this);
+}
+
 function get$2 (units) {
     units = normalizeUnits(units);
     return this.isValid() ? this[units + 's']() : NaN;
@@ -59310,6 +59105,10 @@ function humanize (withSuffix) {
 
 var abs$1 = Math.abs;
 
+function sign(x) {
+    return ((x > 0) - (x < 0)) || +x;
+}
+
 function toISOString$1() {
     // for ISO strings we do not use the normal bubbling rules:
     //  * milliseconds bubble up until they become hours
@@ -59344,7 +59143,7 @@ function toISOString$1() {
     var D = days;
     var h = hours;
     var m = minutes;
-    var s = seconds;
+    var s = seconds ? seconds.toFixed(3).replace(/\.?0+$/, '') : '';
     var total = this.asSeconds();
 
     if (!total) {
@@ -59353,15 +59152,19 @@ function toISOString$1() {
         return 'P0D';
     }
 
-    return (total < 0 ? '-' : '') +
-        'P' +
-        (Y ? Y + 'Y' : '') +
-        (M ? M + 'M' : '') +
-        (D ? D + 'D' : '') +
+    var totalSign = total < 0 ? '-' : '';
+    var ymSign = sign(this._months) !== sign(total) ? '-' : '';
+    var daysSign = sign(this._days) !== sign(total) ? '-' : '';
+    var hmsSign = sign(this._milliseconds) !== sign(total) ? '-' : '';
+
+    return totalSign + 'P' +
+        (Y ? ymSign + Y + 'Y' : '') +
+        (M ? ymSign + M + 'M' : '') +
+        (D ? daysSign + D + 'D' : '') +
         ((h || m || s) ? 'T' : '') +
-        (h ? h + 'H' : '') +
-        (m ? m + 'M' : '') +
-        (s ? s + 'S' : '');
+        (h ? hmsSign + h + 'H' : '') +
+        (m ? hmsSign + m + 'M' : '') +
+        (s ? hmsSign + s + 'S' : '');
 }
 
 var proto$2 = Duration.prototype;
@@ -59381,6 +59184,7 @@ proto$2.asMonths       = asMonths;
 proto$2.asYears        = asYears;
 proto$2.valueOf        = valueOf$1;
 proto$2._bubble        = bubble;
+proto$2.clone          = clone$1;
 proto$2.get            = get$2;
 proto$2.milliseconds   = milliseconds;
 proto$2.seconds        = seconds;
@@ -59422,7 +59226,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.18.1';
+hooks.version = '2.19.1';
 
 setHookCallback(createLocal);
 
@@ -59449,7 +59253,7 @@ hooks.updateLocale          = updateLocale;
 hooks.locales               = listLocales;
 hooks.weekdaysShort         = listWeekdaysShort;
 hooks.normalizeUnits        = normalizeUnits;
-hooks.relativeTimeRounding = getSetRelativeTimeRounding;
+hooks.relativeTimeRounding  = getSetRelativeTimeRounding;
 hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
@@ -59458,7 +59262,7 @@ return hooks;
 
 })));
 
-},{}],298:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 var crypto = require('crypto')
   , qs = require('querystring')
   ;
@@ -59506,7 +59310,7 @@ function compare (a, b) {
 }
 
 function generateBase (httpMethod, base_uri, params) {
-  // adapted from https://dev.twitter.com/docs/auth/oauth and 
+  // adapted from https://dev.twitter.com/docs/auth/oauth and
   // https://dev.twitter.com/docs/auth/creating-signature
 
   // Parameter normalization
@@ -59596,7 +59400,7 @@ exports.rfc3986 = rfc3986
 exports.generateBase = generateBase
 
 
-},{"crypto":60,"querystring":147}],299:[function(require,module,exports){
+},{"crypto":60,"querystring":147}],297:[function(require,module,exports){
 (function (process){
 // Generated by CoffeeScript 1.12.2
 (function() {
@@ -59636,7 +59440,7 @@ exports.generateBase = generateBase
 
 
 }).call(this,require('_process'))
-},{"_process":137}],300:[function(require,module,exports){
+},{"_process":137}],298:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -59656,7 +59460,7 @@ module.exports = {
     RFC3986: 'RFC3986'
 };
 
-},{}],301:[function(require,module,exports){
+},{}],299:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -59669,7 +59473,7 @@ module.exports = {
     stringify: stringify
 };
 
-},{"./formats":300,"./parse":302,"./stringify":303}],302:[function(require,module,exports){
+},{"./formats":298,"./parse":300,"./stringify":301}],300:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -59845,7 +59649,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":304}],303:[function(require,module,exports){
+},{"./utils":302}],301:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -60057,7 +59861,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":300,"./utils":304}],304:[function(require,module,exports){
+},{"./formats":298,"./utils":302}],302:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -60261,7 +60065,7 @@ exports.isBuffer = function isBuffer(obj) {
     return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
 };
 
-},{}],305:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 // Copyright 2010-2012 Mikeal Rogers
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
@@ -60418,7 +60222,7 @@ Object.defineProperty(request, 'debug', {
   }
 })
 
-},{"./lib/cookies":307,"./lib/helpers":310,"./request":316,"extend":248}],306:[function(require,module,exports){
+},{"./lib/cookies":305,"./lib/helpers":308,"./request":314,"extend":248}],304:[function(require,module,exports){
 'use strict'
 
 var caseless = require('caseless')
@@ -60587,7 +60391,7 @@ Auth.prototype.onResponse = function (response) {
 
 exports.Auth = Auth
 
-},{"./helpers":310,"caseless":240,"uuid":353}],307:[function(require,module,exports){
+},{"./helpers":308,"caseless":240,"uuid":351}],305:[function(require,module,exports){
 'use strict'
 
 var tough = require('tough-cookie')
@@ -60627,7 +60431,7 @@ exports.jar = function (store) {
   return new RequestJar(store)
 }
 
-},{"tough-cookie":343}],308:[function(require,module,exports){
+},{"tough-cookie":341}],306:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -60710,7 +60514,7 @@ function getProxyFromURI (uri) {
 module.exports = getProxyFromURI
 
 }).call(this,require('_process'))
-},{"_process":137}],309:[function(require,module,exports){
+},{"_process":137}],307:[function(require,module,exports){
 'use strict'
 
 var fs = require('fs')
@@ -60917,7 +60721,7 @@ Har.prototype.options = function (options) {
 
 exports.Har = Har
 
-},{"extend":248,"fs":48,"har-validator":276,"querystring":147}],310:[function(require,module,exports){
+},{"extend":248,"fs":48,"har-validator":274,"querystring":147}],308:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -60987,7 +60791,7 @@ exports.version = version
 exports.defer = defer
 
 }).call(this,require('_process'))
-},{"_process":137,"crypto":60,"json-stringify-safe":289,"safe-buffer":317}],311:[function(require,module,exports){
+},{"_process":137,"crypto":60,"json-stringify-safe":287,"safe-buffer":315}],309:[function(require,module,exports){
 'use strict'
 
 var uuid = require('uuid')
@@ -61101,7 +60905,7 @@ Multipart.prototype.onRequest = function (options) {
 
 exports.Multipart = Multipart
 
-},{"combined-stream":242,"isstream":284,"safe-buffer":317,"uuid":353}],312:[function(require,module,exports){
+},{"combined-stream":242,"isstream":282,"safe-buffer":315,"uuid":351}],310:[function(require,module,exports){
 'use strict'
 
 var url = require('url')
@@ -61251,7 +61055,7 @@ OAuth.prototype.onRequest = function (_oauth) {
 
 exports.OAuth = OAuth
 
-},{"caseless":240,"crypto":60,"oauth-sign":298,"qs":301,"safe-buffer":317,"url":180,"uuid":353}],313:[function(require,module,exports){
+},{"caseless":240,"crypto":60,"oauth-sign":296,"qs":299,"safe-buffer":315,"url":180,"uuid":351}],311:[function(require,module,exports){
 'use strict'
 
 var qs = require('qs')
@@ -61303,7 +61107,7 @@ Querystring.prototype.unescape = querystring.unescape
 
 exports.Querystring = Querystring
 
-},{"qs":301,"querystring":147}],314:[function(require,module,exports){
+},{"qs":299,"querystring":147}],312:[function(require,module,exports){
 'use strict'
 
 var url = require('url')
@@ -61459,7 +61263,7 @@ Redirect.prototype.onResponse = function (response) {
 
 exports.Redirect = Redirect
 
-},{"url":180}],315:[function(require,module,exports){
+},{"url":180}],313:[function(require,module,exports){
 'use strict'
 
 var url = require('url')
@@ -61636,7 +61440,7 @@ Tunnel.defaultProxyHeaderWhiteList = defaultProxyHeaderWhiteList
 Tunnel.defaultProxyHeaderExclusiveList = defaultProxyHeaderExclusiveList
 exports.Tunnel = Tunnel
 
-},{"tunnel-agent":350,"url":180}],316:[function(require,module,exports){
+},{"tunnel-agent":348,"url":180}],314:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -63192,9 +62996,9 @@ Request.prototype.toJSON = requestToJSON
 module.exports = Request
 
 }).call(this,require('_process'))
-},{"./lib/auth":306,"./lib/cookies":307,"./lib/getProxyFromURI":308,"./lib/har":309,"./lib/helpers":310,"./lib/multipart":311,"./lib/oauth":312,"./lib/querystring":313,"./lib/redirect":314,"./lib/tunnel":315,"_process":137,"aws-sign2":236,"aws4":237,"caseless":240,"extend":248,"forever-agent":252,"form-data":253,"hawk":277,"http":173,"http-signature":278,"https":103,"is-typedarray":283,"isstream":284,"mime-types":296,"performance-now":299,"safe-buffer":317,"stream":172,"stringstream":342,"url":180,"util":185,"zlib":47}],317:[function(require,module,exports){
+},{"./lib/auth":304,"./lib/cookies":305,"./lib/getProxyFromURI":306,"./lib/har":307,"./lib/helpers":308,"./lib/multipart":309,"./lib/oauth":310,"./lib/querystring":311,"./lib/redirect":312,"./lib/tunnel":313,"_process":137,"aws-sign2":236,"aws4":237,"caseless":240,"extend":248,"forever-agent":251,"form-data":252,"hawk":275,"http":173,"http-signature":276,"https":103,"is-typedarray":281,"isstream":282,"mime-types":294,"performance-now":297,"safe-buffer":315,"stream":172,"stringstream":340,"url":180,"util":185,"zlib":47}],315:[function(require,module,exports){
 arguments[4][163][0].apply(exports,arguments)
-},{"buffer":50,"dup":163}],318:[function(require,module,exports){
+},{"buffer":50,"dup":163}],316:[function(require,module,exports){
 (function (Buffer){
 ;(function (sax) { // wrapper for non-node envs
   sax.parser = function (strict, opt) { return new SAXParser(strict, opt) }
@@ -64763,7 +64567,7 @@ arguments[4][163][0].apply(exports,arguments)
 })(typeof exports === 'undefined' ? this.sax = {} : exports)
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":50,"stream":172,"string_decoder":177}],319:[function(require,module,exports){
+},{"buffer":50,"stream":172,"string_decoder":177}],317:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -64935,7 +64739,7 @@ module.exports = {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":50}],320:[function(require,module,exports){
+},{"buffer":50}],318:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2016 Joyent, Inc.
 
@@ -65316,7 +65120,7 @@ Certificate._oldVersionDetect = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./errors":323,"./fingerprint":324,"./formats/openssh-cert":326,"./formats/x509":334,"./formats/x509-pem":333,"./identity":335,"./key":337,"./private-key":338,"./signature":339,"./utils":341,"assert-plus":235,"buffer":50,"crypto":60,"util":185}],321:[function(require,module,exports){
+},{"./algs":317,"./errors":321,"./fingerprint":322,"./formats/openssh-cert":324,"./formats/x509":332,"./formats/x509-pem":331,"./identity":333,"./key":335,"./private-key":336,"./signature":337,"./utils":339,"assert-plus":235,"buffer":50,"crypto":60,"util":185}],319:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -65731,7 +65535,7 @@ function generateECDSA(curve) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./key":337,"./private-key":338,"./utils":341,"assert-plus":235,"buffer":50,"crypto":60,"ecc-jsbn":245,"ecc-jsbn/lib/ec":246,"jsbn":285,"tweetnacl":351}],322:[function(require,module,exports){
+},{"./algs":317,"./key":335,"./private-key":336,"./utils":339,"assert-plus":235,"buffer":50,"crypto":60,"ecc-jsbn":245,"ecc-jsbn/lib/ec":246,"jsbn":283,"tweetnacl":349}],320:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -65831,7 +65635,7 @@ Signer.prototype.sign = function () {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./signature":339,"assert-plus":235,"buffer":50,"stream":172,"tweetnacl":351,"util":185}],323:[function(require,module,exports){
+},{"./signature":337,"assert-plus":235,"buffer":50,"stream":172,"tweetnacl":349,"util":185}],321:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var assert = require('assert-plus');
@@ -65917,7 +65721,7 @@ module.exports = {
 	CertificateParseError: CertificateParseError
 };
 
-},{"assert-plus":235,"util":185}],324:[function(require,module,exports){
+},{"assert-plus":235,"util":185}],322:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -66082,7 +65886,7 @@ Fingerprint._oldVersionDetect = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./certificate":320,"./errors":323,"./key":337,"./utils":341,"assert-plus":235,"buffer":50,"crypto":60}],325:[function(require,module,exports){
+},{"./algs":317,"./certificate":318,"./errors":321,"./key":335,"./utils":339,"assert-plus":235,"buffer":50,"crypto":60}],323:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -66159,7 +65963,7 @@ function write(key, options) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../key":337,"../private-key":338,"../utils":341,"./pem":327,"./rfc4253":330,"./ssh":332,"assert-plus":235,"buffer":50}],326:[function(require,module,exports){
+},{"../key":335,"../private-key":336,"../utils":339,"./pem":325,"./rfc4253":328,"./ssh":330,"assert-plus":235,"buffer":50}],324:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -66485,7 +66289,7 @@ function getCertType(key) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../certificate":320,"../identity":335,"../key":337,"../private-key":338,"../signature":339,"../ssh-buffer":340,"../utils":341,"./rfc4253":330,"assert-plus":235,"buffer":50,"crypto":60}],327:[function(require,module,exports){
+},{"../algs":317,"../certificate":318,"../identity":333,"../key":335,"../private-key":336,"../signature":337,"../ssh-buffer":338,"../utils":339,"./rfc4253":328,"assert-plus":235,"buffer":50,"crypto":60}],325:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -66675,7 +66479,7 @@ function write(key, options, type) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../errors":323,"../key":337,"../private-key":338,"../utils":341,"./pkcs1":328,"./pkcs8":329,"./rfc4253":330,"./ssh-private":331,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60}],328:[function(require,module,exports){
+},{"../algs":317,"../errors":321,"../key":335,"../private-key":336,"../utils":339,"./pkcs1":326,"./pkcs8":327,"./rfc4253":328,"./ssh-private":329,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60}],326:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -66999,7 +66803,7 @@ function writePkcs1ECDSAPrivate(der, key) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../key":337,"../private-key":338,"../utils":341,"./pem":327,"./pkcs8":329,"asn1":234,"assert-plus":235,"buffer":50}],329:[function(require,module,exports){
+},{"../algs":317,"../key":335,"../private-key":336,"../utils":339,"./pem":325,"./pkcs8":327,"asn1":234,"assert-plus":235,"buffer":50}],327:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -67508,7 +67312,7 @@ function writePkcs8ECDSAPrivate(key, der) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../key":337,"../private-key":338,"../utils":341,"./pem":327,"asn1":234,"assert-plus":235,"buffer":50}],330:[function(require,module,exports){
+},{"../algs":317,"../key":335,"../private-key":336,"../utils":339,"./pem":325,"asn1":234,"assert-plus":235,"buffer":50}],328:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -67658,7 +67462,7 @@ function write(key, options) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../key":337,"../private-key":338,"../ssh-buffer":340,"../utils":341,"assert-plus":235,"buffer":50}],331:[function(require,module,exports){
+},{"../algs":317,"../key":335,"../private-key":336,"../ssh-buffer":338,"../utils":339,"assert-plus":235,"buffer":50}],329:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -67923,7 +67727,7 @@ function write(key, options) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../errors":323,"../key":337,"../private-key":338,"../ssh-buffer":340,"../utils":341,"./pem":327,"./rfc4253":330,"asn1":234,"assert-plus":235,"bcrypt-pbkdf":239,"buffer":50,"crypto":60}],332:[function(require,module,exports){
+},{"../algs":317,"../errors":321,"../key":335,"../private-key":336,"../ssh-buffer":338,"../utils":339,"./pem":325,"./rfc4253":328,"asn1":234,"assert-plus":235,"bcrypt-pbkdf":239,"buffer":50,"crypto":60}],330:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -68041,7 +67845,7 @@ function write(key, options) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../key":337,"../private-key":338,"../utils":341,"./rfc4253":330,"./ssh-private":331,"assert-plus":235,"buffer":50}],333:[function(require,module,exports){
+},{"../key":335,"../private-key":336,"../utils":339,"./rfc4253":328,"./ssh-private":329,"assert-plus":235,"buffer":50}],331:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2016 Joyent, Inc.
 
@@ -68122,7 +67926,7 @@ function write(cert, options) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../certificate":320,"../identity":335,"../key":337,"../private-key":338,"../signature":339,"../utils":341,"./pem":327,"./x509":334,"asn1":234,"assert-plus":235,"buffer":50}],334:[function(require,module,exports){
+},{"../algs":317,"../certificate":318,"../identity":333,"../key":335,"../private-key":336,"../signature":337,"../utils":339,"./pem":325,"./x509":332,"asn1":234,"assert-plus":235,"buffer":50}],332:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -68852,7 +68656,7 @@ function writeBitField(setBits, bitIndex) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"../algs":319,"../certificate":320,"../identity":335,"../key":337,"../private-key":338,"../signature":339,"../utils":341,"./pem":327,"./pkcs8":329,"asn1":234,"assert-plus":235,"buffer":50}],335:[function(require,module,exports){
+},{"../algs":317,"../certificate":318,"../identity":333,"../key":335,"../private-key":336,"../signature":337,"../utils":339,"./pem":325,"./pkcs8":327,"asn1":234,"assert-plus":235,"buffer":50}],333:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -69133,7 +68937,7 @@ Identity._oldVersionDetect = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./errors":323,"./fingerprint":324,"./signature":339,"./utils":341,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60,"util":185}],336:[function(require,module,exports){
+},{"./algs":317,"./errors":321,"./fingerprint":322,"./signature":337,"./utils":339,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60,"util":185}],334:[function(require,module,exports){
 // Copyright 2015 Joyent, Inc.
 
 var Key = require('./key');
@@ -69174,7 +68978,7 @@ module.exports = {
 	CertificateParseError: errs.CertificateParseError
 };
 
-},{"./certificate":320,"./errors":323,"./fingerprint":324,"./identity":335,"./key":337,"./private-key":338,"./signature":339}],337:[function(require,module,exports){
+},{"./certificate":318,"./errors":321,"./fingerprint":322,"./identity":333,"./key":335,"./private-key":336,"./signature":337}],335:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -69452,7 +69256,7 @@ Key._oldVersionDetect = function (obj) {
 };
 
 }).call(this,{"isBuffer":require("../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js")})
-},{"../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js":107,"./algs":319,"./dhe":321,"./ed-compat":322,"./errors":323,"./fingerprint":324,"./formats/auto":325,"./formats/pem":327,"./formats/pkcs1":328,"./formats/pkcs8":329,"./formats/rfc4253":330,"./formats/ssh":332,"./formats/ssh-private":331,"./private-key":338,"./signature":339,"./utils":341,"assert-plus":235,"crypto":60}],338:[function(require,module,exports){
+},{"../../../../../AppData/Roaming/npm/node_modules/watchify/node_modules/is-buffer/index.js":107,"./algs":317,"./dhe":319,"./ed-compat":320,"./errors":321,"./fingerprint":322,"./formats/auto":323,"./formats/pem":325,"./formats/pkcs1":326,"./formats/pkcs8":327,"./formats/rfc4253":328,"./formats/ssh":330,"./formats/ssh-private":329,"./private-key":336,"./signature":337,"./utils":339,"assert-plus":235,"crypto":60}],336:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2017 Joyent, Inc.
 
@@ -69710,7 +69514,7 @@ PrivateKey._oldVersionDetect = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./dhe":321,"./ed-compat":322,"./errors":323,"./fingerprint":324,"./formats/auto":325,"./formats/pem":327,"./formats/pkcs1":328,"./formats/pkcs8":329,"./formats/rfc4253":330,"./formats/ssh-private":331,"./key":337,"./signature":339,"./utils":341,"assert-plus":235,"buffer":50,"crypto":60,"tweetnacl":351,"util":185}],339:[function(require,module,exports){
+},{"./algs":317,"./dhe":319,"./ed-compat":320,"./errors":321,"./fingerprint":322,"./formats/auto":323,"./formats/pem":325,"./formats/pkcs1":326,"./formats/pkcs8":327,"./formats/rfc4253":328,"./formats/ssh-private":329,"./key":335,"./signature":337,"./utils":339,"assert-plus":235,"buffer":50,"crypto":60,"tweetnacl":349,"util":185}],337:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -70027,7 +69831,7 @@ Signature._oldVersionDetect = function (obj) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"./algs":319,"./errors":323,"./ssh-buffer":340,"./utils":341,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60}],340:[function(require,module,exports){
+},{"./algs":317,"./errors":321,"./ssh-buffer":338,"./utils":339,"asn1":234,"assert-plus":235,"buffer":50,"crypto":60}],338:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -70179,7 +69983,7 @@ SSHBuffer.prototype.write = function (buf) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"assert-plus":235,"buffer":50}],341:[function(require,module,exports){
+},{"assert-plus":235,"buffer":50}],339:[function(require,module,exports){
 (function (Buffer){
 // Copyright 2015 Joyent, Inc.
 
@@ -70471,7 +70275,7 @@ function opensshCipherInfo(cipher) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"./private-key":338,"assert-plus":235,"buffer":50,"crypto":60,"jsbn":285}],342:[function(require,module,exports){
+},{"./private-key":336,"assert-plus":235,"buffer":50,"crypto":60,"jsbn":283}],340:[function(require,module,exports){
 (function (Buffer){
 var util = require('util')
 var Stream = require('stream')
@@ -70577,7 +70381,7 @@ function alignedWrite(buffer) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":50,"stream":172,"string_decoder":177,"util":185}],343:[function(require,module,exports){
+},{"buffer":50,"stream":172,"string_decoder":177,"util":185}],341:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -71920,7 +71724,7 @@ module.exports = {
   canonicalDomain: canonicalDomain
 };
 
-},{"../package.json":349,"./memstore":344,"./pathMatch":345,"./permuteDomain":346,"./pubsuffix":347,"./store":348,"net":48,"punycode":144,"url":180}],344:[function(require,module,exports){
+},{"../package.json":347,"./memstore":342,"./pathMatch":343,"./permuteDomain":344,"./pubsuffix":345,"./store":346,"net":48,"punycode":144,"url":180}],342:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -72092,7 +71896,7 @@ MemoryCookieStore.prototype.getAllCookies = function(cb) {
   cb(null, cookies);
 };
 
-},{"./pathMatch":345,"./permuteDomain":346,"./store":348,"util":185}],345:[function(require,module,exports){
+},{"./pathMatch":343,"./permuteDomain":344,"./store":346,"util":185}],343:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -72155,7 +71959,7 @@ function pathMatch (reqPath, cookiePath) {
 
 exports.pathMatch = pathMatch;
 
-},{}],346:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -72213,7 +72017,7 @@ function permuteDomain (domain) {
 
 exports.permuteDomain = permuteDomain;
 
-},{"./pubsuffix":347}],347:[function(require,module,exports){
+},{"./pubsuffix":345}],345:[function(require,module,exports){
 /****************************************************
  * AUTOMATICALLY GENERATED by generate-pubsuffix.js *
  *                  DO NOT EDIT!                    *
@@ -72313,7 +72117,7 @@ var index = module.exports.index = Object.freeze(
 
 // END of automatically generated file
 
-},{"punycode":144}],348:[function(require,module,exports){
+},{"punycode":144}],346:[function(require,module,exports){
 /*!
  * Copyright (c) 2015, Salesforce.com, Inc.
  * All rights reserved.
@@ -72386,7 +72190,7 @@ Store.prototype.getAllCookies = function(cb) {
   throw new Error('getAllCookies is not implemented (therefore jar cannot be serialized)');
 };
 
-},{}],349:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 module.exports={
   "_args": [
     [
@@ -72523,7 +72327,7 @@ module.exports={
   "version": "2.3.3"
 }
 
-},{}],350:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -72771,7 +72575,7 @@ if (process.env.NODE_DEBUG && /\btunnel\b/.test(process.env.NODE_DEBUG)) {
 exports.debug = debug // for test
 
 }).call(this,require('_process'))
-},{"_process":137,"assert":15,"events":87,"http":173,"https":103,"net":48,"safe-buffer":317,"tls":48,"util":185}],351:[function(require,module,exports){
+},{"_process":137,"assert":15,"events":87,"http":173,"https":103,"net":48,"safe-buffer":315,"tls":48,"util":185}],349:[function(require,module,exports){
 (function(nacl) {
 'use strict';
 
@@ -75161,7 +74965,7 @@ nacl.setPRNG = function(fn) {
 
 })(typeof module !== 'undefined' && module.exports ? module.exports : (self.nacl = self.nacl || {}));
 
-},{"crypto":19}],352:[function(require,module,exports){
+},{"crypto":19}],350:[function(require,module,exports){
 var twodarray = (arr) => {
   var keys=arr.shift();
   return arr.map((i)=>{
@@ -75175,7 +74979,7 @@ var twodarray = (arr) => {
 if(typeof module !== 'undefined')
   module.exports = twodarray;
 
-},{}],353:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 var v1 = require('./v1');
 var v4 = require('./v4');
 
@@ -75185,7 +74989,7 @@ uuid.v4 = v4;
 
 module.exports = uuid;
 
-},{"./v1":356,"./v4":357}],354:[function(require,module,exports){
+},{"./v1":354,"./v4":355}],352:[function(require,module,exports){
 /**
  * Convert array of 16 byte values to UUID string format of the form:
  * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
@@ -75210,7 +75014,7 @@ function bytesToUuid(buf, offset) {
 
 module.exports = bytesToUuid;
 
-},{}],355:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 (function (global){
 // Unique ID creation requires a high quality random # generator.  In the
 // browser this is a little complicated due to unknown quality of Math.random()
@@ -75247,7 +75051,7 @@ if (!rng) {
 module.exports = rng;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],356:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -75349,7 +75153,7 @@ function v1(options, buf, offset) {
 
 module.exports = v1;
 
-},{"./lib/bytesToUuid":354,"./lib/rng":355}],357:[function(require,module,exports){
+},{"./lib/bytesToUuid":352,"./lib/rng":353}],355:[function(require,module,exports){
 var rng = require('./lib/rng');
 var bytesToUuid = require('./lib/bytesToUuid');
 
@@ -75380,7 +75184,7 @@ function v4(options, buf, offset) {
 
 module.exports = v4;
 
-},{"./lib/bytesToUuid":354,"./lib/rng":355}],358:[function(require,module,exports){
+},{"./lib/bytesToUuid":352,"./lib/rng":353}],356:[function(require,module,exports){
 /*
  * verror.js: richer JavaScript errors
  */
@@ -75833,7 +75637,7 @@ WError.prototype.cause = function we_cause(c)
 	return (this.jse_cause);
 };
 
-},{"assert-plus":235,"core-util-is":243,"extsprintf":249,"util":185}],359:[function(require,module,exports){
+},{"assert-plus":235,"core-util-is":243,"extsprintf":249,"util":185}],357:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   "use strict";
@@ -75847,7 +75651,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],360:[function(require,module,exports){
+},{}],358:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   "use strict";
@@ -75976,7 +75780,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./defaults":361,"xmlbuilder":386}],361:[function(require,module,exports){
+},{"./defaults":359,"xmlbuilder":384}],359:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   exports.defaults = {
@@ -76050,7 +75854,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],362:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   "use strict";
@@ -76409,7 +76213,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./bom":359,"./defaults":361,"./processors":363,"events":87,"sax":318,"timers":178}],363:[function(require,module,exports){
+},{"./bom":357,"./defaults":359,"./processors":361,"events":87,"sax":316,"timers":178}],361:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   "use strict";
@@ -76445,7 +76249,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],364:[function(require,module,exports){
+},{}],362:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.7
 (function() {
   "use strict";
@@ -76484,7 +76288,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./builder":360,"./defaults":361,"./parser":362,"./processors":363}],365:[function(require,module,exports){
+},{"./builder":358,"./defaults":359,"./parser":360,"./processors":361}],363:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var assign, isArray, isEmpty, isFunction, isObject, isPlainObject,
@@ -76559,7 +76363,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],366:[function(require,module,exports){
+},{}],364:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLAttribute;
@@ -76592,7 +76396,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],367:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLCData, XMLNode,
@@ -76626,7 +76430,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],368:[function(require,module,exports){
+},{"./XMLNode":376}],366:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLComment, XMLNode,
@@ -76660,7 +76464,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],369:[function(require,module,exports){
+},{"./XMLNode":376}],367:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDTDAttList, XMLNode,
@@ -76712,7 +76516,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],370:[function(require,module,exports){
+},{"./XMLNode":376}],368:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDTDElement, XMLNode,
@@ -76749,7 +76553,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],371:[function(require,module,exports){
+},{"./XMLNode":376}],369:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDTDEntity, XMLNode, isObject,
@@ -76807,7 +76611,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLNode":378}],372:[function(require,module,exports){
+},{"./Utility":363,"./XMLNode":376}],370:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDTDNotation, XMLNode,
@@ -76846,7 +76650,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],373:[function(require,module,exports){
+},{"./XMLNode":376}],371:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDeclaration, XMLNode, isObject,
@@ -76888,7 +76692,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLNode":378}],374:[function(require,module,exports){
+},{"./Utility":363,"./XMLNode":376}],372:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDTDAttList, XMLDTDElement, XMLDTDEntity, XMLDTDNotation, XMLDocType, XMLNode, isObject,
@@ -76997,7 +76801,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLDTDAttList":369,"./XMLDTDElement":370,"./XMLDTDEntity":371,"./XMLDTDNotation":372,"./XMLNode":378}],375:[function(require,module,exports){
+},{"./Utility":363,"./XMLDTDAttList":367,"./XMLDTDElement":368,"./XMLDTDEntity":369,"./XMLDTDNotation":370,"./XMLNode":376}],373:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDocument, XMLNode, XMLStringWriter, XMLStringifier, isPlainObject,
@@ -77047,7 +76851,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLNode":378,"./XMLStringWriter":382,"./XMLStringifier":383}],376:[function(require,module,exports){
+},{"./Utility":363,"./XMLNode":376,"./XMLStringWriter":380,"./XMLStringifier":381}],374:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLAttribute, XMLCData, XMLComment, XMLDTDAttList, XMLDTDElement, XMLDTDEntity, XMLDTDNotation, XMLDeclaration, XMLDocType, XMLDocumentCB, XMLElement, XMLProcessingInstruction, XMLRaw, XMLStringWriter, XMLStringifier, XMLText, isFunction, isObject, isPlainObject, ref,
@@ -77451,7 +77255,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLAttribute":366,"./XMLCData":367,"./XMLComment":368,"./XMLDTDAttList":369,"./XMLDTDElement":370,"./XMLDTDEntity":371,"./XMLDTDNotation":372,"./XMLDeclaration":373,"./XMLDocType":374,"./XMLElement":377,"./XMLProcessingInstruction":379,"./XMLRaw":380,"./XMLStringWriter":382,"./XMLStringifier":383,"./XMLText":384}],377:[function(require,module,exports){
+},{"./Utility":363,"./XMLAttribute":364,"./XMLCData":365,"./XMLComment":366,"./XMLDTDAttList":367,"./XMLDTDElement":368,"./XMLDTDEntity":369,"./XMLDTDNotation":370,"./XMLDeclaration":371,"./XMLDocType":372,"./XMLElement":375,"./XMLProcessingInstruction":377,"./XMLRaw":378,"./XMLStringWriter":380,"./XMLStringifier":381,"./XMLText":382}],375:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLAttribute, XMLElement, XMLNode, isFunction, isObject, ref,
@@ -77564,7 +77368,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLAttribute":366,"./XMLNode":378}],378:[function(require,module,exports){
+},{"./Utility":363,"./XMLAttribute":364,"./XMLNode":376}],376:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLCData, XMLComment, XMLDeclaration, XMLDocType, XMLElement, XMLNode, XMLProcessingInstruction, XMLRaw, XMLText, isEmpty, isFunction, isObject, ref,
@@ -77998,7 +77802,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLCData":367,"./XMLComment":368,"./XMLDeclaration":373,"./XMLDocType":374,"./XMLElement":377,"./XMLProcessingInstruction":379,"./XMLRaw":380,"./XMLText":384}],379:[function(require,module,exports){
+},{"./Utility":363,"./XMLCData":365,"./XMLComment":366,"./XMLDeclaration":371,"./XMLDocType":372,"./XMLElement":375,"./XMLProcessingInstruction":377,"./XMLRaw":378,"./XMLText":382}],377:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLNode, XMLProcessingInstruction,
@@ -78035,7 +77839,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],380:[function(require,module,exports){
+},{"./XMLNode":376}],378:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLNode, XMLRaw,
@@ -78069,7 +77873,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],381:[function(require,module,exports){
+},{"./XMLNode":376}],379:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLCData, XMLComment, XMLDTDAttList, XMLDTDElement, XMLDTDEntity, XMLDTDNotation, XMLDeclaration, XMLDocType, XMLElement, XMLProcessingInstruction, XMLRaw, XMLStreamWriter, XMLText, XMLWriterBase,
@@ -78350,7 +78154,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLCData":367,"./XMLComment":368,"./XMLDTDAttList":369,"./XMLDTDElement":370,"./XMLDTDEntity":371,"./XMLDTDNotation":372,"./XMLDeclaration":373,"./XMLDocType":374,"./XMLElement":377,"./XMLProcessingInstruction":379,"./XMLRaw":380,"./XMLText":384,"./XMLWriterBase":385}],382:[function(require,module,exports){
+},{"./XMLCData":365,"./XMLComment":366,"./XMLDTDAttList":367,"./XMLDTDElement":368,"./XMLDTDEntity":369,"./XMLDTDNotation":370,"./XMLDeclaration":371,"./XMLDocType":372,"./XMLElement":375,"./XMLProcessingInstruction":377,"./XMLRaw":378,"./XMLText":382,"./XMLWriterBase":383}],380:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLCData, XMLComment, XMLDTDAttList, XMLDTDElement, XMLDTDEntity, XMLDTDNotation, XMLDeclaration, XMLDocType, XMLElement, XMLProcessingInstruction, XMLRaw, XMLStringWriter, XMLText, XMLWriterBase,
@@ -78686,7 +78490,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLCData":367,"./XMLComment":368,"./XMLDTDAttList":369,"./XMLDTDElement":370,"./XMLDTDEntity":371,"./XMLDTDNotation":372,"./XMLDeclaration":373,"./XMLDocType":374,"./XMLElement":377,"./XMLProcessingInstruction":379,"./XMLRaw":380,"./XMLText":384,"./XMLWriterBase":385}],383:[function(require,module,exports){
+},{"./XMLCData":365,"./XMLComment":366,"./XMLDTDAttList":367,"./XMLDTDElement":368,"./XMLDTDEntity":369,"./XMLDTDNotation":370,"./XMLDeclaration":371,"./XMLDocType":372,"./XMLElement":375,"./XMLProcessingInstruction":377,"./XMLRaw":378,"./XMLText":382,"./XMLWriterBase":383}],381:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLStringifier,
@@ -78851,7 +78655,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],384:[function(require,module,exports){
+},{}],382:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLNode, XMLText,
@@ -78885,7 +78689,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./XMLNode":378}],385:[function(require,module,exports){
+},{"./XMLNode":376}],383:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLWriterBase,
@@ -78977,7 +78781,7 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{}],386:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 // Generated by CoffeeScript 1.12.6
 (function() {
   var XMLDocument, XMLDocumentCB, XMLStreamWriter, XMLStringWriter, assign, isFunction, ref;
@@ -79032,4 +78836,4 @@ WError.prototype.cause = function we_cause(c)
 
 }).call(this);
 
-},{"./Utility":365,"./XMLDocument":375,"./XMLDocumentCB":376,"./XMLStreamWriter":381,"./XMLStringWriter":382}]},{},[188]);
+},{"./Utility":363,"./XMLDocument":373,"./XMLDocumentCB":374,"./XMLStreamWriter":379,"./XMLStringWriter":380}]},{},[188]);

@@ -1,5 +1,7 @@
 body {
   margin: 0;
+  color: white;
+  font-family: sans-serif;
 }
 $mkl1: rgb(124, 150, 167);
 $mkl2: rgb(130, 156, 173);
@@ -17,6 +19,77 @@ input {
   outline: 0;
   background: none;
 }
+
+.flex_row {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+.flex_col {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  transition: 0.3s;
+  background-color: $mkl1;
+  z-index: 1000;
+}
+#loader.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+#spinner {
+  animation: animate 1.5s linear infinite;
+  clip: rect(0, 80px, 80px, 40px);
+  height: 80px;
+  width: 80px;
+  position: absolute;
+  left: calc(50% - 40px);
+  top: calc(50% - 40px);
+}
+@keyframes animate {
+  0% {
+    transform: rotate(0deg)
+  }
+  100% {
+    transform: rotate(220deg)
+  }
+}
+#spinner:after {
+  animation: animate2 1.5s ease-in-out infinite;
+  clip: rect(0, 80px, 80px, 40px);
+  content:'';
+  border-radius: 50%;
+  height: 80px;
+  width: 80px;
+  position: absolute;
+}
+@keyframes animate2 {
+  0% {
+    box-shadow: inset #fff 0 0 0 17px;
+    transform: rotate(-140deg);
+  }
+  50% {
+    box-shadow: inset #fff 0 0 0 2px;
+  }
+  100% {
+    box-shadow: inset #fff 0 0 0 17px;
+    transform: rotate(140deg);
+  }
+}
+
 
 #options {
   width: 100%;
@@ -49,5 +122,61 @@ input {
   }
   #trainer_options {
     width: 200px;
+  }
+}
+
+
+#trainer_pagination {
+  @extend .flex_row;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 400px;
+  background-color: $mkl2;
+
+  .pag {
+    width: 33.33%;
+    font-weight: bold;
+    color: white;
+    padding: 8px 12px;
+    border-left: 3px solid $mkl1;
+    border-bottom: 3px solid $mkl1;
+
+    &:first-child {
+      border-left: 0;
+    }
+  }
+}
+
+#trainer-c {
+  width: 100%;
+  max-width: 400px;
+  background-color: $mkl2;
+  @extend .flex_col;
+
+  .trainer {
+    width: 100%;
+    @extend .flex_row;
+    align-content: center;
+    align-items: center;
+    cursor: pointer;
+
+
+    h3 {
+      width: 33.33%;
+      display: block;
+      color: white;
+      padding: 8px 12px;
+      border-left: 3px solid $mkl1;
+      border-bottom: 3px solid $mkl1;
+      height: 42px;
+
+      &:first-child {
+        border-left: 0;
+      }
+    }
+    p {
+      @extend h3;
+      padding: 9.8px 12px;
+    }
   }
 }

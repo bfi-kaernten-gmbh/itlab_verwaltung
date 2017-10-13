@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "get-sheet-done": "^0.1.4",
     "gsheet-web": "git+https://github.com/digplan/gsheet-web.git",
     "moment": "^2.18.1"
   }
