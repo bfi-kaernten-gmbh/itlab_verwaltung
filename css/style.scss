@@ -7,10 +7,16 @@ $mkl1: rgb(124, 150, 167);
 $mkl2: rgb(130, 156, 173);
 
 * {
+  display: block;
   box-sizing: border-box;
   position: relative;
   margin: 0;
   padding: 0;
+}
+
+*::selection {
+  background-color: rgb(180, 216, 240);
+  color: #fff;
 }
 
 
@@ -33,6 +39,11 @@ input {
   justify-content: flex-start;
   align-items: flex-start;
   align-content: flex-start;
+}
+
+#main_container {
+  width: 100%;
+  @extend .flex_row;
 }
 
 
@@ -125,12 +136,16 @@ input {
   }
 }
 
+#trainer_container, #data_container {
+  width: 50%;
+  max-width: 600px;
+  margin-top: 10px;
+}
 
 #trainer_pagination {
   @extend .flex_row;
-  margin-top: 10px;
+
   width: 100%;
-  max-width: 400px;
   background-color: $mkl2;
 
   .pag {
@@ -138,8 +153,7 @@ input {
     font-weight: bold;
     color: white;
     padding: 8px 12px;
-    border-left: 3px solid $mkl1;
-    border-bottom: 3px solid $mkl1;
+    border: 1.5px solid $mkl1;
 
     &:first-child {
       border-left: 0;
@@ -149,7 +163,6 @@ input {
 
 #trainer-c {
   width: 100%;
-  max-width: 400px;
   background-color: $mkl2;
   @extend .flex_col;
 
@@ -160,14 +173,16 @@ input {
     align-items: center;
     cursor: pointer;
 
+    &:hover .hours {
+      background-color: $mkl1;
+    }
 
     h3 {
       width: 33.33%;
       display: block;
       color: white;
       padding: 8px 12px;
-      border-left: 3px solid $mkl1;
-      border-bottom: 3px solid $mkl1;
+      border: 1.5px solid $mkl1;
       height: 42px;
 
       &:first-child {
@@ -177,6 +192,53 @@ input {
     p {
       @extend h3;
       padding: 9.8px 12px;
+      transition: 0.3s;
     }
+  }
+}
+#data_container {
+  overflow-x: scroll;
+  background-color: $mkl1;
+}
+#data_table_pagination {
+  width: auto;
+  @extend .flex_row;
+  flex-flow: row;
+
+  div {
+    width: 100px;
+    font-weight: bold;
+    color: white;
+    padding: 8px 12px;
+  }
+  .tag {
+    width: 50px;
+  }
+  .datum {
+    width: 120px;
+  }
+}
+
+#data_table {
+  width: auto;
+  @extend .flex_row;
+  flex-flow: row;
+
+
+  > div {
+    width: 100px;
+    padding: 8px 12px;
+
+    > div {
+      width: 100px;
+      color: white;
+
+    }
+  }
+  .tag div, .tag{
+    width: 50px;
+  }
+  .datum div, .datum{
+    width: 120px;
   }
 }

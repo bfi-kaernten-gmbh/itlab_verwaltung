@@ -5,10 +5,16 @@ body {
 }
 
 * {
+  display: block;
   box-sizing: border-box;
   position: relative;
   margin: 0;
   padding: 0;
+}
+
+*::selection {
+  background-color: #b4d8f0;
+  color: #fff;
 }
 
 input {
@@ -17,7 +23,7 @@ input {
   background: none;
 }
 
-.flex_row, #trainer_pagination, #trainer-c .trainer {
+.flex_row, #main_container, #trainer_pagination, #trainer-c .trainer, #data_table_pagination, #data_table {
   display: flex;
   flex-flow: row wrap;
   justify-content: flex-start;
@@ -31,6 +37,10 @@ input {
   justify-content: flex-start;
   align-items: flex-start;
   align-content: flex-start;
+}
+
+#main_container {
+  width: 100%;
 }
 
 #loader {
@@ -127,10 +137,14 @@ input {
   width: 200px;
 }
 
-#trainer_pagination {
+#trainer_container, #data_container {
+  width: 50%;
+  max-width: 600px;
   margin-top: 10px;
+}
+
+#trainer_pagination {
   width: 100%;
-  max-width: 400px;
   background-color: #829cad;
 }
 
@@ -139,8 +153,7 @@ input {
   font-weight: bold;
   color: white;
   padding: 8px 12px;
-  border-left: 3px solid #7c96a7;
-  border-bottom: 3px solid #7c96a7;
+  border: 1.5px solid #7c96a7;
 }
 
 #trainer_pagination .pag:first-child {
@@ -149,7 +162,6 @@ input {
 
 #trainer-c {
   width: 100%;
-  max-width: 400px;
   background-color: #829cad;
 }
 
@@ -160,13 +172,16 @@ input {
   cursor: pointer;
 }
 
+#trainer-c .trainer:hover .hours {
+  background-color: #7c96a7;
+}
+
 #trainer-c .trainer h3, #trainer-c .trainer p {
   width: 33.33%;
   display: block;
   color: white;
   padding: 8px 12px;
-  border-left: 3px solid #7c96a7;
-  border-bottom: 3px solid #7c96a7;
+  border: 1.5px solid #7c96a7;
   height: 42px;
 }
 
@@ -176,4 +191,53 @@ input {
 
 #trainer-c .trainer p {
   padding: 9.8px 12px;
+  transition: 0.3s;
+}
+
+#data_container {
+  overflow-x: scroll;
+  background-color: #7c96a7;
+}
+
+#data_table_pagination {
+  width: auto;
+  flex-flow: row;
+}
+
+#data_table_pagination div {
+  width: 100px;
+  font-weight: bold;
+  color: white;
+  padding: 8px 12px;
+}
+
+#data_table_pagination .tag {
+  width: 50px;
+}
+
+#data_table_pagination .datum {
+  width: 120px;
+}
+
+#data_table {
+  width: auto;
+  flex-flow: row;
+}
+
+#data_table > div {
+  width: 100px;
+  padding: 8px 12px;
+}
+
+#data_table > div > div {
+  width: 100px;
+  color: white;
+}
+
+#data_table .tag div, #data_table .tag {
+  width: 50px;
+}
+
+#data_table .datum div, #data_table .datum {
+  width: 120px;
 }
