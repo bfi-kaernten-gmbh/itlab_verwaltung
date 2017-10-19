@@ -28,6 +28,7 @@ calenderFrom.attachEvent("onChange", function(date, state){
     //console.log(curFrom);
     if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
       updateTrainerTable();
+      updateDataTable();
     }
 });
 calenderTo.attachEvent("onChange", function(date, state){
@@ -37,6 +38,7 @@ calenderTo.attachEvent("onChange", function(date, state){
 
     if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
       updateTrainerTable();
+      updateDataTable();
     }
 });
 
@@ -83,9 +85,10 @@ const chosenInit = () => {
     }
     if(curFrom >= 0 && curTo >= 0 && curFrom <= curTo) {
       updateTrainerTable();
+      updateDataTable();
     }
     if(trainer.length === 0) {
-      removeTrainerContent();
+      removeContent(document.getElementById('trainer-c'));
     }
   });
 }
@@ -105,8 +108,7 @@ const getTrainerNames = (data) => {
 const updateTrainerTable = () => {
 
   if(trainer.length > 0) {
-    console.log('updateTrainerTable');
-    removeTrainerContent()
+    removeContent(document.getElementById('trainer-c'));
     for (var i = 0; i < trainer.length; i++) {
       var hoursArray = [];
       for (var c = curFrom; c <= curTo; c++) {
@@ -154,10 +156,10 @@ function getTotalHours(array) {
   return totalHours;
 }
 
-function removeTrainerContent() {
-  var tContainer = document.getElementById('trainer-c');
-  while (tContainer.lastChild) {
-    tContainer.removeChild(tContainer.lastChild);
+function removeContent(el) {
+  var Container = el;
+  while (Container.lastChild) {
+    Container.removeChild(Container.lastChild);
   }
 }
 
@@ -203,5 +205,35 @@ function isInt(n) {
    return n % 1 === 0;
 }
 
-var test = '0.5';
-console.log(test * 60);
+function updateDataTable() {
+  removeContent(document.getElementById('data_table'));
+  removeContent(document.getElementById('data_table_pagination'));
+  var tag = '<div class="tag">';
+  var datum = '<div class="datum">';
+  if(trainer.length > 0) {
+    for (var i = 0; i < trainer.length; i++) {
+      var trainerStart = '<div class="trainerStart">';
+      var trainerEnd = '<div class="trainerEnd">';
+      for(var c = curFrom; c <= curTo; c++) {
+        if (i === 0) {
+          tag += '<div>'+ dataArray[c].tag + '</div>';
+          datum += '<div>'+ dataArray[c].datum + '</div>';
+        }
+        trainerStart += '<div>' + dataArray[c][trainer[i]+'start'] +'</div>';
+        trainerEnd += '<div>' + dataArray[c][trainer[i]+'end'] +'</div>';
+      }
+      if(i === 0) {
+        tag += '</div>';
+        datum += '</div>';
+        document.getElementById('data_table_pagination').innerHTML += '<div class="tag">Tag</div> <div class="datum">Datum</div>';
+        document.getElementById('data_table').innerHTML += tag + datum;
+      }
+      trainerStart += '</div>';
+      trainerEnd += '<div>';
+      document.getElementById('data_table_pagination').innerHTML += '<div>' + trainer[i] +'start</div><div>' + trainer[i] +'end</div>';
+      document.getElementById('data_table').innerHTML += trainerStart + trainerEnd;
+    }
+    console.log(tag, datum);
+
+  }
+}
