@@ -198,7 +198,20 @@ input {
 }
 #data_container {
   overflow-x: scroll;
-  background-color: $mkl1;
+  background-color: $mkl2;
+  margin-left: 4px;
+  width: calc(50% - 4px);
+}
+#data_container::-webkit-scrollbar-track {
+  background-color: $mkl2;
+}
+#data_container::-webkit-scrollbar {
+  height: 8px;
+	background-color: $mkl1;
+}
+#data_container::-webkit-scrollbar-thumb {
+	background-color: rgb(180, 216, 240);
+  border-radius: 4px;
 }
 #data_table_pagination {
   width: auto;
@@ -210,11 +223,16 @@ input {
     font-weight: bold;
     color: white;
     padding: 8px 12px;
+    border: 1.5px solid $mkl1;
+
+    h3 {
+      width: 100px;
+    }
   }
-  .tag {
+  .tag, .tag h3 {
     width: 50px;
   }
-  .datum {
+  .datum, .datum h3 {
     width: 120px;
   }
 }
@@ -227,12 +245,14 @@ input {
 
   > div {
     width: 100px;
-    padding: 8px 12px;
+
 
     > div {
       width: 100px;
       color: white;
-
+      height: 34px;
+      padding: 8px 12px;
+      border: 1.5px solid $mkl1;
     }
   }
   .tag div, .tag{

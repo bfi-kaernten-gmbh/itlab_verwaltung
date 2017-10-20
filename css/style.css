@@ -196,7 +196,23 @@ input {
 
 #data_container {
   overflow-x: scroll;
+  background-color: #829cad;
+  margin-left: 4px;
+  width: calc(50% - 4px);
+}
+
+#data_container::-webkit-scrollbar-track {
+  background-color: #829cad;
+}
+
+#data_container::-webkit-scrollbar {
+  height: 8px;
   background-color: #7c96a7;
+}
+
+#data_container::-webkit-scrollbar-thumb {
+  background-color: #b4d8f0;
+  border-radius: 4px;
 }
 
 #data_table_pagination {
@@ -209,13 +225,18 @@ input {
   font-weight: bold;
   color: white;
   padding: 8px 12px;
+  border: 1.5px solid #7c96a7;
 }
 
-#data_table_pagination .tag {
+#data_table_pagination div h3, #data_table_pagination div #trainer-c .trainer p, #trainer-c .trainer #data_table_pagination div p {
+  width: 100px;
+}
+
+#data_table_pagination .tag, #data_table_pagination .tag h3, #data_table_pagination .tag #trainer-c .trainer p, #trainer-c .trainer #data_table_pagination .tag p {
   width: 50px;
 }
 
-#data_table_pagination .datum {
+#data_table_pagination .datum, #data_table_pagination .datum h3, #data_table_pagination .datum #trainer-c .trainer p, #trainer-c .trainer #data_table_pagination .datum p {
   width: 120px;
 }
 
@@ -226,12 +247,14 @@ input {
 
 #data_table > div {
   width: 100px;
-  padding: 8px 12px;
 }
 
 #data_table > div > div {
   width: 100px;
   color: white;
+  height: 34px;
+  padding: 8px 12px;
+  border: 1.5px solid #7c96a7;
 }
 
 #data_table .tag div, #data_table .tag {

@@ -225,12 +225,12 @@ function updateDataTable() {
       if(i === 0) {
         tag += '</div>';
         datum += '</div>';
-        document.getElementById('data_table_pagination').innerHTML += '<div class="tag">Tag</div> <div class="datum">Datum</div>';
+        document.getElementById('data_table_pagination').innerHTML += '<div class="tag"><h3>Tag</h3></div> <div class="datum"><h3>Datum</h3></div>';
         document.getElementById('data_table').innerHTML += tag + datum;
       }
       trainerStart += '</div>';
       trainerEnd += '<div>';
-      document.getElementById('data_table_pagination').innerHTML += '<div>' + trainer[i] +'start</div><div>' + trainer[i] +'end</div>';
+      document.getElementById('data_table_pagination').innerHTML += '<div><h3>' + trainer[i] +'start</h3></div><div><h3>' + trainer[i] +'end</h3></div>';
       document.getElementById('data_table').innerHTML += trainerStart + trainerEnd;
     }
     console.log(tag, datum);

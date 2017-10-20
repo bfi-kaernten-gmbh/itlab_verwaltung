@@ -4,13 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "google-spreadsheets": "^0.5.1",
     "gsheet-web": "git+https://github.com/digplan/gsheet-web.git",
     "moment": "^2.18.1"
+  },
+  "devDependencies": {
+    "webpack": "^3.8.1"
   }
 }
