@@ -1,7 +1,7 @@
 # itlab_verwaltung
 
-install dependencies
 ##### npm i
+install dependencies
 
 ##### npm start
 start webpack dev server for development
