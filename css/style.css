@@ -1,6 +1,7 @@
 body {
   margin: 0;
   color: white;
+  font-size: 14px;
   font-family: sans-serif;
 }
 
@@ -15,6 +16,10 @@ body {
 *::selection {
   background-color: #b4d8f0;
   color: #fff;
+}
+
+h3, #trainer-c .trainer p {
+  font-size: 14px;
 }
 
 input {
@@ -144,12 +149,13 @@ input {
 }
 
 #trainer_pagination {
+  font-size: 14px;
   width: 100%;
   background-color: #829cad;
 }
 
 #trainer_pagination .pag {
-  width: 33.33%;
+  width: 25%;
   font-weight: bold;
   color: white;
   padding: 8px 12px;
@@ -163,6 +169,7 @@ input {
 #trainer-c {
   width: 100%;
   background-color: #829cad;
+  font-size: 14px !important;
 }
 
 #trainer-c .trainer {
@@ -177,7 +184,7 @@ input {
 }
 
 #trainer-c .trainer h3, #trainer-c .trainer p {
-  width: 33.33%;
+  width: 25%;
   display: block;
   color: white;
   padding: 8px 12px;

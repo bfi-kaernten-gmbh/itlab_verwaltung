@@ -1,6 +1,7 @@
 body {
   margin: 0;
   color: white;
+  font-size: 14px;
   font-family: sans-serif;
 }
 $mkl1: rgb(124, 150, 167);
@@ -18,7 +19,9 @@ $mkl2: rgb(130, 156, 173);
   background-color: rgb(180, 216, 240);
   color: #fff;
 }
-
+h3 {
+  font-size: 14px;
+}
 
 input {
   border: 0;
@@ -144,12 +147,12 @@ input {
 
 #trainer_pagination {
   @extend .flex_row;
-
+  font-size: 14px;
   width: 100%;
   background-color: $mkl2;
 
   .pag {
-    width: 33.33%;
+    width: 25%;
     font-weight: bold;
     color: white;
     padding: 8px 12px;
@@ -165,6 +168,7 @@ input {
   width: 100%;
   background-color: $mkl2;
   @extend .flex_col;
+  font-size: 14px!important;
 
   .trainer {
     width: 100%;
@@ -178,7 +182,7 @@ input {
     }
 
     h3 {
-      width: 33.33%;
+      width: 25%;
       display: block;
       color: white;
       padding: 8px 12px;
