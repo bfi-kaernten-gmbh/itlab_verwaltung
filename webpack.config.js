@@ -1,18 +1,49 @@
+const webpack = require('webpack');
 const path = require('path');
 
-module.exports = {
-  entry: './js/script.js',
+let config = {
+  entry: './js/index.js',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'build')
+    path: path.resolve(__dirname, 'js'),
+    filename: 'bundle.js'
   },
-  node: {
-    console: false,
-    global: true,
-    process: true,
-    Buffer: true,
-    __filename: "mock",
-    __dirname: "mock",
-    setImmediate: true
-  }
+  module: {
+    rules: [
+      {
+        test: /\.js$/, // files ending with .js
+        exclude: /(node_modules|bowe_components)/, // exclude the node_modules directory
+        loader: 'babel-loader' // use this (babel-core) loader
+      },
+    ]
+  },
+  plugins: [
+
+  ],
+  devServer: {
+    contentBase: path.resolve(__dirname, './'), // A directory or URL to server the HTML content from
+    historyApiFallback: true, // fallback to /index.html for Single Page Application
+    inline: true, // inline mode (set false to diable including client scripts (like liverelload))
+    open: false, // open defaukt browser while launching
+    compress: true,
+    port: 3000
+  },
+  devtool: 'eval-source-map'
 };
+
+if (process.env.Node_ENV === 'production') {
+  console.log(hi);
+  module.exports.plugins.push(
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false,
+        comparisons: false,
+      }
+    })
+    // new UglifyJSPlugin({
+    //   test: /\.js($|\?)/i,
+    //   exclude: /node_modules/
+    // })
+  )
+}
+
+module.exports = config;
